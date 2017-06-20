@@ -1,0 +1,17 @@
+念API说明（似乎不检测请求头？）
+GET api.nian.so/check/email
+	获取指定的邮箱是否被使用
+	email:邮箱地址
+	返回json：
+		{
+			status:200,
+			error:0,
+			data:1,   #0为未注册，1为注册
+		}
+	*在这里返回后Set-Cookie了一个flash值，用途不明
+POST api.nian.so/user/login
+	登陆
+	email:地址
+	password:加密后的密码
+
+	
