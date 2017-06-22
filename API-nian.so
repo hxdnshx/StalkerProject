@@ -1,17 +1,297 @@
 念API说明（似乎不检测请求头？）
 GET api.nian.so/check/email
 	获取指定的邮箱是否被使用
-	email:邮箱地址
+	参数:
+		email:邮箱地址
 	返回json：
 		{
-			status:200,
-			error:0,
-			data:1,   #0为未注册，1为注册
+			"status" : "200",
+			"error" : "0",
+			"data" : "1",   #0为未注册，1为注册
 		}
 	*在这里返回后Set-Cookie了一个flash值，用途不明
 POST api.nian.so/user/login
 	登陆
-	email:地址
-	password:加密后的密码
-
-	
+	参数:
+		email:地址
+		password:加密后的密码
+	返回json：
+		{
+			"status" : "200",
+			"error" : "0",
+			"data" :
+				{
+					"uid" : "111",		#用户编号
+					"shell" : "xxx",	#获得的授权编号
+					"name" : "Fin_"		#用户昵称
+				}
+		}
+GET api.nian.so/user/[uid]/dreams
+	获取一个用户的所有梦想（咸鱼）
+	参数:
+		uid:用户编号（与shell是唯一对应的）
+		shell:登陆获得的授权编号
+	返回json:
+		{
+			"status" : "200",
+			"error" : "0",
+			"data" :
+				{
+					"page" : "1",					#当前页
+					"perPage" : "20",				#每页数据总数
+					dreams : 
+					[
+						{
+							"id" : "3295188",		#梦想id
+							"title" : "Record",		#梦想名
+							"image" : "p4.png",		#梦想封面图
+							"percent" : "0",		#梦想是否完成？
+						},
+						#多个与上面相同的项目
+					]
+				}
+		}
+GET api.nian.so/game/over
+	获取指定用户是否处于游戏结束状态
+	参数:
+		uid:用户编号（与shell是唯一对应的）
+		shell:登陆获得的授权编号
+	返回json:
+		{
+			"status" : "200",
+			"error" : "0",
+			"data" :
+				{
+					"gameover" : "0"	#0是未结束
+				}
+		}
+GET api.nian.so/user/[uid]
+	获取指定用户的信息
+	参数:
+		uid:用户编号（与shell是唯一对应的）
+		shell:登陆获得的授权编号
+	返回json:
+		{
+ 		   "status" : 200,
+		    "error" : 0,
+		    "data" : 
+		    	{
+	        		"user" : 
+	        			{
+	        	    		"uid" : "938737",				#用户编号(...
+	        	    		"name" : "Fin_",				#用户名
+	        	    		"email" : "741782800@qq.com",	#邮箱
+	        	    		"lastdate" : "1497910848",		#上次更新日期？
+    	    	    		"coin" : "9",					#念币
+        		    		"vip" : "0",					#是否vip（那个充120的vip
+            				"follows" : "1",				#关注者
+            				"followed" : "1",				#粉丝
+            				"is_followed" : "1",			#自己是否关注了这个人
+            				"step" : "15",					#总足迹
+            				"dream" : "4",					#总梦想
+            				"level" : "0",					#等级
+            				"cover" : "",					#ios/安卓上的个人页面背景图
+            				"likes" : "0",					#被人点赞的次数？
+            				"topics_count" : "0",			#???
+            				"deadline" : "20:15",			#离游戏结束剩下的时间（搜索他人的信息时永远为0）
+            				"phone" : "0",					#电话信息
+            				"isban" : "0",					#是否被封禁
+            				"gender" : "0",					#性别（0是保密啦）
+            				"isMonthly" : "0",				#？？？
+            				"pet_count" : "0",				#ios/安卓上的宠物个数
+            				"member" : "0",					#？？
+            				"find_by_phone" : "1",			#可以根据电话号码找到
+            				"find_by_weibo" : "1",			#可以根据微博找到
+            				"balance" : "0"					#余额（根据念充的）
+        				}
+    			}
+		}
+GET api.nian.so/letter/list
+	获取自己收到的信息（点赞，关注，私信）
+	参数:
+		uid:用户编号（与shell是唯一对应的）
+		shell:登陆获得的授权编号
+	返回json:
+	{
+	    "notice_reply" : "0",	#他人的评论
+	    "notice_like" : "0",	#他人的点赞
+	    "notice_news" : "0"		#？？？
+	}
+GET nian.so/api/news.php
+	获取统一的更新信息
+	参数：
+		无
+	返回json:
+		{
+		    "news" : 
+			    {
+			        "title" : "",
+			        "content" : "新的一年也要保持年轻而可爱！",
+			        "button" : " 好！",
+			        "version" : "3"
+			    }
+		}
+GET api.nian.so/v2/explore/follow
+	按照自己的follow显示进展
+	参数:
+		page : 页数
+		uid : 用户编号（与shell是唯一对应的）
+		shell : 登陆获得的授权编号
+	返回json:
+	{
+    	"status" : 200,
+    	"error" : 0,
+    	"data" : 
+		    {
+		        "count" : "20",		#items总数
+		        "items" : 
+		        	[
+			            {
+			                "dream" : "3295188",							#所属梦想
+			                "sid" : "23075422",								#进展编号
+			                "uid" : "938737",								#所属用户编号
+			                "user" : "Fin_",								#所属用户名
+			                "content" : "",									#文本内容
+			                "lastdate" : "1498055962",						#发布时间
+			                "title" : "Record",								#所属梦想的标题
+			                "image" : "938737_14980559610.png",				#进展对应的图片
+			                "width" : "490",								#图片的宽度
+			                "height" : "746",								#图片的高度
+			                "likes" : "0",									#几个人点赞？
+			                "liked" : "0",
+			                "comments" : "0",								#几个人评论
+			                "member" : "0",									#？？？
+			                "images" : 										#多个图片
+			                	[
+				                    {
+				                        "path" : "938737_14980559610.png",	#在img.nian.so/step/[path]!large 获取
+				                        "width" : "490",
+				                        "height" : "746"
+				                    }
+			                	],
+			                "type" : "6"									#6对应只有图片，0对应只有文本，5对应有文本有图片...等等
+			            }
+		        	],
+		        "page" : "1"
+		    }
+	}
+GET nian.so/api/searchuser.php
+	寻找某个特定的用户
+	参数:
+		uid : 用户编号（与shell是唯一对应的）
+		shell : 登陆获得的授权编号
+		page : 页数
+		keyword : 关键词
+	返回json:
+		{
+		    "users": 
+			    [
+			        {
+			            "uid": "930238",			#用户id
+			            "user": "lotusLand",		#用户名
+			            "follow": "0"				#是否已follow
+			        }
+			    ]
+		}
+GET api.nian.so/v2/multidream/[dreamID]
+	获取特定梦想的更新
+	参数:
+		uid : 用户编号（与shell是唯一对应的）
+		shell : 登陆获得的授权编号
+		sort : 排序方式(desc)
+		page : 页码
+	返回json:
+		{
+		    "status": 200,
+		    "error": 0,
+		    "data": {
+		        "dream": {
+		            "id": "3234872",						#梦想ID
+		            "uid": "930238",						#用户ID
+		            "user": "lotusLand",					#用户名
+		            "title": "SecondLife",					#记本名
+		            "content": "....当这个记本被在意的人看到时，才产生了意义，虽说不一定是正面的。",	#介绍
+		            "lastdate": "1496328776",				#上次更新？
+		            "image": "930238_1495992708.png",		#封面图片，在img.nian.so/dream/[image]!large获取
+		            "like": "0",							#按赞次数
+		            "step": "98",							#进展总数
+		            "like_step": "0",
+		            "total_users": "1",						#参加用户
+		            "joined": "0",							#自己是否参加了
+		            "followed": "0",						
+		            "tags": [],
+		            "private": "0",							#是否是私有的
+		            "percent": "1",	
+		            "isliked": "0",
+		            "editors": [							#共同的编纂者
+		                "930238"
+		            ],
+		            "followers": "0",						#关注这个梦想的人
+		            "cover": "930238_1495988227.jpg",		#封面路径
+		            "permission": "0",						#？？
+		            "is_friend": "0"
+		        },
+		        "steps": 
+			        [		#与explore/follow处的类似，此处便不再赘述
+			            {
+			                "sid": "23028589",
+			                "content": "每一次痛苦，都能够成为探索更大世界的动力吧w",
+			                "uid": "930238",
+			                "image": "",
+			                "width": "0",
+			                "height": "0",
+			                "lastdate": "1497837520",
+			                "likes": "0",
+			                "liked": "0",
+			                "user": "lotusLand",
+			                "comments": "6",
+			                "dream": "3234872",
+			                "images": [],
+			                "type": "7",
+			                "member": "0"
+			            }
+			        ]
+		    }
+		}
+GET api.nian.so/step/[stepID]/comments
+	获取某个进展的所有评论
+	参数:
+		uid : 用户编号（与shell是唯一对应的）
+		shell : 登陆获得的授权编号
+		page : 页码
+	返回json:
+		{
+		    "status": 200,
+		    "error": 0,
+		    "data": {
+		        "step": 
+			        {
+			            "sid": "22865256",
+			            "content": "如果这就是我的命运的话",
+			            "uid": "930238",
+			            "user": "lotusLand",
+			            "image": "930238_1495992708.png",
+			            "lastdate": "1497073851",
+			            "width": "0",
+			            "height": "0",
+			            "likes": "0",
+			            "liked": "0",
+			            "comments": "2",
+			            "dream": "3234872",
+			            "hidden": "0"
+			        },
+		        "comments": 
+			        [
+			            {
+			                "id": "6536279",					#回应ID
+			                "content": "是为了创造新的故事",	#回应内容
+			                "uid": "930238",					#回应用户id
+			                "user": "lotusLand",				#回应用户名
+			                "lastdate": "1497074102",			#回应日期
+			                "type": "0"
+			            }
+			        ],
+		        "page": "1",
+		        "perPage": "15"
+		    }
+		}
