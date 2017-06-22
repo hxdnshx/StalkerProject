@@ -48,6 +48,8 @@ var status;
 var event;
 var follow;
 var fan;
+var intro;
+var playCount;
 casper.waitForSelector('strong[id="event_count"]',null,null,10000);
 casper.then(function(){
 	this.echo("Load Complete");
@@ -55,6 +57,11 @@ casper.then(function(){
 	event = this.fetchText('strong[id="event_count"]');
 	follow = this.fetchText('strong[id="follow_count"]');
 	fan = this.fetchText('strong[id="fan_count"]');
+	if(this.exists('.m-record-title'))
+		playCount=this.fetchText('.m-record-title h4').replace(/累计听歌/,'').replace(/首/,'');
+	else
+		playCount=-1;//这里取一个特殊的数字代表最近听的歌曲不公开
+	intro = this.fetchText('div.f-brk').replace(/个人介绍：/,'');
 	casper.echo('Event:' + event + ' Follow:' + follow + ' Fan:' + fan);
 	status={'event':event,'follow':follow,'fan':fan};
 });
@@ -194,7 +201,9 @@ casper.then(function(){
 
 //====================================Return to MainList
 casper.then(function(){this.thenOpen(mainPageUrl);});
-casper.then(function(){this.switchToFrame('contentFrame');});
+casper.waitForSelector('.g-iframe,.m-cvrlst');
+casper.then(function(){
+	if(!this.exists('.m-cvrlst'))this.switchToFrame('contentFrame');});
 //casper.then(function(){this.reload();});
 
 
@@ -329,7 +338,13 @@ var fs=require('fs');
 
 casper.run(function(){
 	var result={
-		'status' : status,
+		'status' : {
+			'event' : event,
+			'follow' : follow,
+			'fan' : fan,
+			'intro' : intro，
+			'playCount' : playCount
+		},
 		'shares' : shares,
 		'follows' : follows,
 		'fans' : fans,
@@ -338,5 +353,6 @@ casper.run(function(){
 		'playLists' : PlayLists
 	};
 	fs.write('result.json',JSON.stringify(result));
+	this.echo('Finish. Exported to result.json');
 	this.exit();
 });
