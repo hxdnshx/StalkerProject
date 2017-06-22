@@ -50,6 +50,7 @@ var follow;
 var fan;
 var intro;
 var playCount;
+var imgPath;
 casper.waitForSelector('strong[id="event_count"]',null,null,10000);
 casper.then(function(){
 	this.echo("Load Complete");
@@ -61,6 +62,8 @@ casper.then(function(){
 		playCount=this.fetchText('.m-record-title h4').replace(/累计听歌/,'').replace(/首/,'');
 	else
 		playCount=-1;//这里取一个特殊的数字代表最近听的歌曲不公开
+	if(this.exists('dt#ava img'))
+		imgPath=this.getElementAttribute('dt#ava img','src');
 	intro = this.fetchText('div.f-brk').replace(/个人介绍：/,'');
 	casper.echo('Event:' + event + ' Follow:' + follow + ' Fan:' + fan);
 	status={'event':event,'follow':follow,'fan':fan};
@@ -342,8 +345,9 @@ casper.run(function(){
 			'event' : event,
 			'follow' : follow,
 			'fan' : fan,
-			'intro' : intro，
-			'playCount' : playCount
+			'intro' : intro,
+			'playCount' : playCount,
+			'imgPath' : imgPath
 		},
 		'shares' : shares,
 		'follows' : follows,
