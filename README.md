@@ -8,7 +8,7 @@
 ## 进度
 1. 抓取目标
  * 网易云（完成）（[netease.js]("https://github.com/hxdnshx/StalkerProject/blob/master/netease.js")）
- + 念（API整理中）（登录相关参考[nian-Robot]("https://github.com/ConnorNowhere/nian-robot")）
+ + 念（基本API完成）（登录相关参考[nian-Robot]("https://github.com/ConnorNowhere/nian-robot")）（[API-nian.so]("https://github.com/hxdnshx/StalkerProject/blob/master/API-nian.so")）
  + 微博
  + QQ（待定）
  + 微信朋友圈（待定）
