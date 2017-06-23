@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace StalkerProject.NetEaseObserver
 {
-    class NetEaseFetch
+    class NetEaseFetch : ISTKService
     {
         public int Interval { get; set; }
         public string TargetUser { get; set; }
@@ -19,13 +19,13 @@ namespace StalkerProject.NetEaseObserver
         {
             if (workingThread == null)
             {
-                workingThread = new Thread(run);
+                workingThread = new Thread(Run);
                 pendingTerminate = false;
                 workingThread.Start();
             }
         }
 
-        private void run()
+        private void Run()
         {
             ProcessStartInfo psi = new ProcessStartInfo("casperjs", "netease.js \"" + TargetUser + "\" \"" + TargetUser + ".json\"");
             //psi.RedirectStandardOutput = true;
