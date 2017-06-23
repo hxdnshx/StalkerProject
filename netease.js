@@ -59,7 +59,7 @@ casper.then(function(){
 	follow = this.fetchText('strong[id="follow_count"]');
 	fan = this.fetchText('strong[id="fan_count"]');
 	if(this.exists('.m-record-title'))
-		playCount=this.fetchText('.m-record-title h4').replace(/累计听歌/,'').replace(/首/,'');
+		playCount=this.fetchText('.m-record-title h4').replace(/累积听歌/,'').replace(/首/,'');
 	else
 		playCount=-1;//这里取一个特殊的数字代表最近听的歌曲不公开
 	if(this.exists('dt#ava img'))
@@ -94,7 +94,7 @@ casper.then(function(){
 	{
 		var comment=this.fetchText('div#' + shareList[i] + ' div.text');
 		var href=this.getElementAttribute(
-			'div#' + shareList[i] + ' div.tit','href');
+			'div#' + shareList[i] + ' a.s-fc1','href');
 		var songName=this.fetchText(
 			'div#' + shareList[i] + ' a.s-fc1');
 		var songArtist=this.fetchText(
@@ -356,7 +356,7 @@ casper.run(function(){
 		'freqAll' : freqAll,
 		'playLists' : PlayLists
 	};
-	fs.write('result.json',JSON.stringify(result));
-	this.echo('Finish. Exported to result.json');
+	fs.write(casper.cli.args[1],JSON.stringify(result));
+	this.echo('Finish. Exported to' + casper.cli.args[1]);
 	this.exit();
 });

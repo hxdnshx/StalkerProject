@@ -1,5 +1,6 @@
 *.png
 *.json
+*.xml
 
 #ignore thumbnails created by windows
 Thumbs.db
