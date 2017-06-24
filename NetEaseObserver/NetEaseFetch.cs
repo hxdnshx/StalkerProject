@@ -13,15 +13,17 @@ namespace StalkerProject.NetEaseObserver
     {
         public int Interval { get; set; }
         public string TargetUser { get; set; }
-        private Thread workingThread;
-        private bool pendingTerminate;
+        private Thread _workingThread;
+        private bool _pendingTerminate;
+        public string Alias { get; set; }
+
         public void Start()
         {
-            if (workingThread == null)
+            if (_workingThread == null)
             {
-                workingThread = new Thread(Run);
-                pendingTerminate = false;
-                workingThread.Start();
+                _workingThread = new Thread(Run);
+                _pendingTerminate = false;
+                _workingThread.Start();
             }
         }
 
@@ -33,14 +35,16 @@ namespace StalkerProject.NetEaseObserver
             psi.UseShellExecute = false;
             for (;;)
             {
-                if (pendingTerminate) break;
+                if (_pendingTerminate) break;
                 Process fetchProc=Process.Start(psi);
                 fetchProc.WaitForExit();
                 if(fetchProc.ExitCode!=0)
                     Console.WriteLine("Fetch Failed.");
                 else
                 {
-                    File.WriteAllText(TargetUser + ".xml",JsonHelper.ConvertJsonToXml(TargetUser + ".json"));
+                    string ret = JsonHelper.ConvertJsonToXml(TargetUser + ".json");
+                    File.WriteAllText(TargetUser + ".xml",ret);
+                    OnDataFetched?.Invoke(ret);
                     Console.WriteLine("Message Fetched.");
                 }
 
@@ -50,8 +54,18 @@ namespace StalkerProject.NetEaseObserver
 
         public void Stop()
         {
-            pendingTerminate = true;
-            workingThread.Join();
+            _pendingTerminate = true;
+            _workingThread.Join();
         }
+
+        public void LoadDefaultSetting()
+        {
+            Interval = 60000;
+            TargetUser = "InTheFlickering";
+            Alias = "NetEaseFetch" + new Random().Next(1, 10000);
+        }
+
+        [STKDescription("当新的数据被拉取时")]
+        public Action<string> OnDataFetched { get; set; }
     }
 }

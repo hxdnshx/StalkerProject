@@ -38,7 +38,8 @@ namespace StalkerProject.NetEaseObserver
 
         static void Main(string[] args)
         {
-            
+            ServiceManager manager=new ServiceManager();
+            manager.ReadSetting("serviceSetting.xml");
             AddAddress("http://*:8081/",System.Environment.MachineName,System.Environment.UserName);
             using (HttpListener server = new HttpListener())
             {

@@ -8,6 +8,8 @@ namespace StalkerProject.NetEaseObserver
 {
     class NetEaseAnalyse : ISTKService
     {
+        public string Alias { get; set; }
+
         public void Start()
         {
             throw new NotImplementedException();
@@ -16,6 +18,17 @@ namespace StalkerProject.NetEaseObserver
         public void Stop()
         {
             throw new NotImplementedException();
+        }
+
+        public void LoadDefaultSetting()
+        {
+            throw new NotImplementedException();
+        }
+
+        [STKInputPort]
+        public void OnDataUpdated(string data)
+        {
+            
         }
     }
 }
