@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StalkerProject.NetEaseObserver
@@ -9,26 +11,31 @@ namespace StalkerProject.NetEaseObserver
     class NetEaseAnalyse : ISTKService
     {
         public string Alias { get; set; }
+        public string WorkingDir { get; set; }
 
         public void Start()
         {
-            throw new NotImplementedException();
+            FileHelper.ResolvePath(WorkingDir);
+            //Nothing to do...
         }
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            //Nothing to do
         }
 
         public void LoadDefaultSetting()
         {
-            throw new NotImplementedException();
+            Alias = "NetEaseAnalyse" + new Random().Next(1, 10000);
+            WorkingDir = "./AnalyseHistory";
         }
 
         [STKInputPort]
-        public void OnDataUpdated(string data)
+        public void OnDataUpdated(string Target,string data)
         {
             
         }
     }
+
+
 }

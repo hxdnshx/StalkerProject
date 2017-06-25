@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ThreadState = System.Threading.ThreadState;
 
 namespace StalkerProject.NetEaseObserver
 {
@@ -13,17 +14,17 @@ namespace StalkerProject.NetEaseObserver
     {
         public int Interval { get; set; }
         public string TargetUser { get; set; }
-        private Thread _workingThread;
-        private bool _pendingTerminate;
+        private Thread workingThread;
+        private AutoResetEvent isTerminate;
         public string Alias { get; set; }
 
         public void Start()
         {
-            if (_workingThread == null)
+            if (workingThread == null)
             {
-                _workingThread = new Thread(Run);
-                _pendingTerminate = false;
-                _workingThread.Start();
+                workingThread = new Thread(Run);
+                isTerminate=new AutoResetEvent(false);
+                workingThread.Start();
             }
         }
 
@@ -35,7 +36,7 @@ namespace StalkerProject.NetEaseObserver
             psi.UseShellExecute = false;
             for (;;)
             {
-                if (_pendingTerminate) break;
+                
                 Process fetchProc=Process.Start(psi);
                 fetchProc.WaitForExit();
                 if(fetchProc.ExitCode!=0)
@@ -44,18 +45,19 @@ namespace StalkerProject.NetEaseObserver
                 {
                     string ret = JsonHelper.ConvertJsonToXml(TargetUser + ".json");
                     File.WriteAllText(TargetUser + ".xml",ret);
-                    OnDataFetched?.Invoke(ret);
+                    OnDataFetched?.Invoke(TargetUser,ret);
                     Console.WriteLine("Message Fetched.");
                 }
 
-                Thread.Sleep(Interval<60000?60000:Interval);
+                if (isTerminate.WaitOne(Math.Max(Interval, 60000)))
+                    break;
             }
         }
 
         public void Stop()
         {
-            _pendingTerminate = true;
-            _workingThread.Join();
+            isTerminate.Set();
+            workingThread.Join();
         }
 
         public void LoadDefaultSetting()
@@ -66,6 +68,6 @@ namespace StalkerProject.NetEaseObserver
         }
 
         [STKDescription("当新的数据被拉取时")]
-        public Action<string> OnDataFetched { get; set; }
+        public Action<string,string> OnDataFetched { get; set; }
     }
 }

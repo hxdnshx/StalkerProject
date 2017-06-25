@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StalkerProject.NetEaseObserver
+namespace StalkerProject
 {
     public class STKDescription : Attribute
     {
@@ -29,7 +29,7 @@ namespace StalkerProject.NetEaseObserver
     /// 并扫描加了STKInputPort Attibute的方法，作为输入路径，作为可以连接的点显示。
     /// 所有public的属性也会公开出来。
     /// </summary>
-    interface ISTKService
+    public interface ISTKService
     {
         /// <summary>
         /// 用于标识这个服务的别名
