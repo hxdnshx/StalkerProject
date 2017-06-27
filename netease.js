@@ -311,22 +311,29 @@ casper.then(function(){
 		this.thenOpen(link);
 		//this.waitForSelector('iframe#contentFrame');
 		this.then(function(){this.switchToFrame('contentFrame');});
-		this.waitForSelector('table.m-table');
+		this.waitForSelector('table.m-table,i.u-icn-21');//List or NotFound
 		this.then(function(){
+			
 			var playListName=this.fetchText('h2.f-ff2.f-brk');
 			var playCount=this.fetchText('strong#play-count');
-			var musicList=this.getElementsAttribute('table.m-table tr','id');
+			var description=this.fetchText('p.intr');
+			this.echo('\n\nplayList:' + playListName + '  playCount:' + playCount);
+			this.echo('description:' + description);
+			var musicList=null;
 			var songData=new Array();
 			var i;
-			this.echo('\n\nplayList:' + playListName + '  playCount:' + playCount);
-			for(i=0;i<musicList.length;i++)
+			if(!this.exists('i.u-icn-21'))
 			{
-				var songName=specialSelect(musicList[i],'div.f-cb div.tt div.ttc span.txt a b','title');
-				if(songName == null || songName == '')continue;
-				songData.push(songName);
-				this.echo('song:' + songName);
+				musicList=this.getElementsAttribute('table.m-table tr','id');
+				for(i=0;i<musicList.length;i++)
+				{
+					var songName=specialSelect(musicList[i],'div.f-cb div.tt div.ttc span.txt a b','title');
+					if(songName == null || songName == '')continue;
+					songData.push(songName);
+					this.echo('song:' + songName);
+				}
 			}
-			PlayLists.push({'playList' : playListName,'playCount' : playCount,'musicList' : songData});
+			PlayLists.push({'playList' : playListName,'playCount' : playCount,'description' : description,'musicList' : songData});
 		});
 		this.back();
 	}
