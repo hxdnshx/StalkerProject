@@ -31,7 +31,7 @@ namespace StalkerProject.NetEaseObserver
         }
 
         [STKInputPort]
-        public void OnDataUpdated(string Target,string data)
+        public void OnDataUpdated(string target,string data)
         {
             
         }
