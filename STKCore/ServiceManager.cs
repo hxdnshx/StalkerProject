@@ -13,12 +13,31 @@ namespace StalkerProject
     {
         public List<ISTKService> ActiveServices { get; set; }
         public Dictionary<string,Type> ServiceTypes=new Dictionary<string, Type>();
-
+        private Dictionary<int,Type> _actionTypes=new Dictionary<int, Type>();
 
         public static string GetExePath()
         {
             FileInfo fi=new FileInfo(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
             return fi.DirectoryName;
+        }
+
+        /// <summary>
+        /// 因为Action<>根据不同的泛型参数个数，对应的是不同的类型，所以需要获取一下w
+        /// </summary>
+        private void EnumActions()
+        {
+            _actionTypes[0] = typeof(Action);
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (type.FullName.Contains("System.Action") && type.IsGenericTypeDefinition)
+                    {
+                        Console.WriteLine(type.ToString());
+                        _actionTypes[type.GetGenericArguments().Length] = type;
+                    }
+                }
+            }
         }
 
         public void LoadAssemblyInfo()
@@ -51,6 +70,7 @@ namespace StalkerProject
 
         public ServiceManager()
         {
+            EnumActions();
             LoadAssemblyInfo();
             ActiveServices=new List<ISTKService>();
         }
@@ -116,7 +136,9 @@ namespace StalkerProject
                 var fromArgs = fromMethodInfo.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
                 //https://stackoverflow.com/questions/12131301/how-can-i-dynamically-create-an-actiont-at-runtime
                 //动态创建类型
-                var fromMethodType = typeof(Action<>).MakeGenericType(fromArgs);
+                var fromMethodType = fromArgs.Length>0 ?
+                    _actionTypes[fromArgs.Length].MakeGenericType(fromArgs)
+                    :typeof(Action);
                 if (toPortInfo.PropertyType != fromMethodType)
                 {
                     Console.WriteLine(toPortInfo.PropertyType.ToString() + fromType + "is Not Equal");
@@ -165,9 +187,9 @@ namespace StalkerProject
                 {
                     foreach (var property in service.GetType().GetProperties())
                     {
-                        if (!property.PropertyType.IsGenericType) continue;
-                        var genericType = property.PropertyType.GetGenericTypeDefinition();
-                        if (genericType != typeof(Action<>)) continue;
+                        var originType = property.PropertyType;
+                        if (originType.IsConstructedGenericType) originType = originType.GetGenericTypeDefinition();
+                        if (_actionTypes.FirstOrDefault(pair=>pair.Value==originType).Value==null) continue;
                         var value = property.GetValue(service) as Delegate;
                         if (value == null) continue;
                         foreach (var @delegate in value.GetInvocationList())
