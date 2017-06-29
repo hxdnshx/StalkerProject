@@ -317,7 +317,9 @@ casper.then(function(){
 			var playListName=this.fetchText('h2.f-ff2.f-brk');
 			var playCount=this.fetchText('strong#play-count');
 			var description=this.fetchText('p.intr');
-			this.echo('\n\nplayList:' + playListName + '  playCount:' + playCount);
+			var favCount=this.getElementAttribute('a.u-btni-fav','data-count');
+			var commentCount=this.fetchText('span#cnt_comment_count');
+			this.echo('\n\nplayList:' + playListName + '  playCount:' + playCount + ' Fav:' + favCount + ' Comment:' + commentCount);
 			this.echo('description:' + description);
 			var musicList=null;
 			var songData=new Array();
@@ -333,7 +335,7 @@ casper.then(function(){
 					this.echo('song:' + songName);
 				}
 			}
-			PlayLists.push({'playList' : playListName,'playCount' : playCount,'description' : description,'musicList' : songData});
+			PlayLists.push({'playList' : playListName,'playCount' : playCount,'description' : description,'favCount' : favCount,'commentCount':commentCount,'musicList' : songData});
 		});
 		this.back();
 	}
