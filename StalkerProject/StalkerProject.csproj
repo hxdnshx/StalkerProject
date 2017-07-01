@@ -64,6 +64,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NianObserver\NianObserver.csproj">
+      <Project>{846a0a4e-fd93-43e4-bb6e-a8d2ed57527f}</Project>
+      <Name>NianObserver</Name>
+    </ProjectReference>
     <ProjectReference Include="..\STKCore\STKCore.csproj">
       <Project>{572e0c6f-b262-4070-b816-b4b7e5680823}</Project>
       <Name>STKCore</Name>

@@ -1,0 +1,3 @@
+[submodule "STKCore/HttpHelper"]
+	path = STKCore/HttpHelper
+	url = https://github.com/hxdnshx/HttpHelper.git

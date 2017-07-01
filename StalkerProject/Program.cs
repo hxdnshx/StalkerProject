@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using StalkerProject;
+using StalkerProject.NianObserver;
 
 namespace StalkerProject
 {
@@ -31,6 +32,8 @@ namespace StalkerProject
         }
         static void Main(string[] args)
         {
+            NianObserver.NianApi inst=new NianApi();
+            inst.Login("741782800@qq.com", "17672155");
             ServiceManager manager = new ServiceManager();
             manager.ReadSetting("serviceSetting.xml");
             manager.SaveSetting("serviceSetting.xml");
