@@ -8,7 +8,7 @@ namespace StalkerProject
 {
     public class StringItem
     {
-        public string StringItemId { get; set; }
+        public string StringData { get; set; }
         public DateTime LastModifiedTime { get; set; }
         public bool IsRemoved { get; set; }
     }
