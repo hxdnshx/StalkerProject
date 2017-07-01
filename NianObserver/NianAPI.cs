@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -284,17 +285,36 @@ namespace StalkerProject.NianObserver
             shellToken = shell;
         }
 
+        private NameValueCollection ShellParameter()
+        {
+            var parameters= HttpUtility.ParseQueryString(string.Empty);
+            parameters["uid"] = uid;
+            parameters["shell"] = shell;
+            return parameters;
+        }
+
+        private string Request(string uri, bool isAuth, string[] additionalParams=null)
+        {
+            var uriBuilder = new UriBuilder(NianApiAddr.IsGameOver);
+            var parameters = isAuth ? ShellParameter() : new NameValueCollection();
+            if (additionalParams != null)
+            {
+                if (additionalParams.Length % 2 != 0)
+                    throw new ArgumentException("Invalid additionParams");
+                int i = 0;
+                for (i = 0; i < additionalParams.Length / 2; i++)
+                    parameters[additionalParams[i * 2]] = additionalParams[i * 2 + 1];
+            }
+            uriBuilder.Query = parameters.ToString();
+            return helper.HttpGet(uriBuilder.ToString());
+        }
+
         public bool RestoreLogin(string userId, string shellToken)
         {
             uid = userId;
             shell = shellToken;
 
-            var uriBuilder = new UriBuilder(NianApiAddr.IsGameOver);
-            var parameters = HttpUtility.ParseQueryString(string.Empty);
-            parameters["uid"] = uid;
-            parameters["shell"] = shell;
-            uriBuilder.Query = parameters.ToString();
-            string ret = helper.HttpGet(uriBuilder.ToString());
+            var ret = Request(NianApiAddr.IsGameOver, true);
             var jsonDoc = JObject.Parse(ret);
             if (jsonDoc["status"].Value<string>() == "200")
                 return true;
@@ -314,11 +334,11 @@ namespace StalkerProject.NianObserver
                 byte2String += result[i].ToString("x2");
             }
             {
-                var uriBuilder = new UriBuilder(NianApiAddr.CheckEMail);
-                var parameters = HttpUtility.ParseQueryString(string.Empty);
-                parameters["email"] = mailAddr;
-                uriBuilder.Query = parameters.ToString();
-                string ret = helper.HttpGet(uriBuilder.ToString());
+                string ret = Request(NianApiAddr.CheckEMail,false,
+                    new []
+                    {
+                        "email",mailAddr
+                    });
                 var jsonDoc = JObject.Parse(ret);
             }
             {
@@ -336,6 +356,19 @@ namespace StalkerProject.NianObserver
                 }
                 return false;
             }
+        }
+
+        public JObject GetUserData(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                userId = uid;
+            var ret = Request(string.Format(NianApiAddr.GetUserInfo, userId), true);
+            var jsonDoc = JObject.Parse(ret);
+            if (jsonDoc["status"].Value<string>() == "200")
+            {
+                return jsonDoc["data"] as JObject;
+            }
+            return null;
         }
     }
 }
