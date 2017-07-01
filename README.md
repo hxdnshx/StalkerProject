@@ -1,4 +1,5 @@
 # StalkerProject
+献给自己已经逝去的，名为“初恋”的感情。
 ## 介绍
 这是一个用于对若干个SNS平台所获取的信息，进行总合，汇集，以特定的方式（如每日邮件，RSS，总合网页）进行展现，以提高信息获取效率的项目。
 ~~设置成他人后可以变相进行STK，不过这样做大概会孤独一生的！~~
@@ -8,7 +9,7 @@
 ## 进度
 1. 抓取目标
  * 网易云（完成）（[netease.js]("https://github.com/hxdnshx/StalkerProject/blob/master/netease.js")）
- + 念（API整理完成）（登录相关参考[nian-Robot]("https://github.com/ConnorNowhere/nian-robot")）（[API-nian.so]("https://github.com/hxdnshx/StalkerProject/blob/master/API-nian.so")）(直接使用网页抓取,可能会增加浏览计数)
+ + 念（登陆C#实现完成）（登录相关参考[nian-Robot]("https://github.com/ConnorNowhere/nian-robot")）（[API-nian.so]("https://github.com/hxdnshx/StalkerProject/blob/master/API-nian.so")）(直接使用网页抓取,可能会增加浏览计数)
  + 微博(可登录)
  + QQ（待定）
  + 微信朋友圈（待定）
