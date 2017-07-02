@@ -17,7 +17,8 @@ namespace StalkerProject
 
         public static string GetExePath()
         {
-            FileInfo fi=new FileInfo(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+            var proc = System.Diagnostics.Process.GetCurrentProcess();
+            FileInfo fi=new FileInfo(proc.MainModule.FileName);
             return fi.DirectoryName;
         }
 
@@ -49,7 +50,9 @@ namespace StalkerProject
                 //loadedAssemblyList.Add(assembly.);
                 foreach (var aType in assembly.GetTypes())
                 {
-                    if (aType.IsInstanceOfType(typeof(ISTKService)))
+                    if(aType.Name== "DomainProxy")
+                        Console.Write("");
+                    if (aType.GetInterfaces().Contains(typeof(ISTKService)))
                         ServiceTypes.Add(aType.Name,aType);
                 }
             }
@@ -62,7 +65,7 @@ namespace StalkerProject
                 var assembly = Assembly.LoadFrom(file);
                 foreach (var aType in assembly.GetTypes())
                 {
-                    if (typeof(ISTKService).IsAssignableFrom(aType))
+                    if (aType.GetInterfaces().Contains(typeof(ISTKService)))
                         ServiceTypes.Add(aType.Name, aType);
                 }
             }
@@ -105,7 +108,7 @@ namespace StalkerProject
                 if(className==null)continue;
                 Type classType = null;
                 ServiceTypes.TryGetValue(className, out classType);
-                if (classType == null) continue;
+                if (classType == null) throw new ArgumentException("不存在服务:" + className);
                 ISTKService srv = (ISTKService) Activator.CreateInstance(classType);
                 srv.LoadDefaultSetting();//Load Default Setting First
                 foreach (var element in xElement.Elements())

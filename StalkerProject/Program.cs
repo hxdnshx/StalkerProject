@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using StalkerProject;
-using StalkerProject.NianObserver;
 
 namespace StalkerProject
 {
@@ -36,17 +30,17 @@ namespace StalkerProject
             if (string.IsNullOrWhiteSpace(SubUrl)) return false;
             if (request.Request.RawUrl.IndexOf(SubUrl) == 0) //In The Beginning
             {
-                if (OnDataFetched == null) return false;
-                if (OnDataFetched.GetInvocationList().Length > 1)
+                if (OnRequest == null) return false;
+                if (OnRequest.GetInvocationList().Length > 1)
                     throw new ArgumentException("OnDataFetched不能接受多个连接");
-                OnDataFetched(request);
+                OnRequest(request);
                 return true;
             }
             return false;
         }
 
         [STKDescription("收到网页请求时")]
-        public Action<HttpListenerContext> OnDataFetched { get; set; }
+        public Action<HttpListenerContext> OnRequest { get; set; }
     }
     class Program
     {
@@ -71,29 +65,14 @@ namespace StalkerProject
         private static string ShellPath = "shell.txt";
         static void Main(string[] args)
         {
-            NianObserver.NianApi inst=new NianApi();
-            bool loginFlag = false;
-            if (File.Exists(ShellPath))
-            {
-                string[] data = File.ReadAllLines(ShellPath);
-                if (inst.RestoreLogin(data[0], data[1]))
-                    loginFlag = true;
-            }
-            if (loginFlag==false && inst.Login("741782800@qq.com", "17672155"))//Short Circuit
-            {
-                string uid="";
-                string shell="";
-                inst.GetLoginToken(out uid,out shell);
-                File.WriteAllText(ShellPath,uid + "\r\n" + shell);
-            }
             ServiceManager manager = new ServiceManager();
             manager.ReadSetting("serviceSetting.xml");
-            manager.SaveSetting("serviceSetting.xml");
+            //manager.SaveSetting("serviceSetting.xml");
             foreach (var srv in manager.ActiveServices)
             {
                 srv.Start();
             }
-            AddAddress("http://*:8081/", System.Environment.MachineName, System.Environment.UserName);
+            //AddAddress("http://*:8081/", System.Environment.MachineName, System.Environment.UserName);
             using (HttpListener server = new HttpListener())
             {
                 server.Prefixes.Add(@"http://*:8081/");

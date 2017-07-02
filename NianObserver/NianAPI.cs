@@ -277,6 +277,7 @@ namespace StalkerProject.NianObserver
             helper=new HttpHelper();
             helper.SetUserAgent("NianiOS/5.0.3 (iPad; iOS 10.3.1; Scale/2.00)");
             helper.SetAccept("*/*");
+            helper.SetEncoding(Encoding.UTF8);
         }
 
         public void GetLoginToken(out string userId, out string shellToken)
@@ -295,7 +296,7 @@ namespace StalkerProject.NianObserver
 
         private string Request(string uri, bool isAuth, string[] additionalParams=null)
         {
-            var uriBuilder = new UriBuilder(NianApiAddr.IsGameOver);
+            var uriBuilder = new UriBuilder(uri);
             var parameters = isAuth ? ShellParameter() : new NameValueCollection();
             if (additionalParams != null)
             {
@@ -358,11 +359,37 @@ namespace StalkerProject.NianObserver
             }
         }
 
-        public JObject GetUserData(string userId)
+        public JObject GetUserData(string userId = null)
         {
             if (string.IsNullOrWhiteSpace(userId))
                 userId = uid;
             var ret = Request(string.Format(NianApiAddr.GetUserInfo, userId), true);
+            var jsonDoc = JObject.Parse(ret);
+            if (jsonDoc["status"].Value<string>() == "200")
+            {
+                return jsonDoc["data"] as JObject;
+            }
+            return null;
+        }
+
+        public JObject GetUserDreams(string userId = null,int page=1)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                userId = uid;
+            var ret = Request(string.Format(NianApiAddr.GetDreams, userId), true,
+                new [] {"page",page.ToString()});
+            var jsonDoc = JObject.Parse(ret);
+            if (jsonDoc["status"].Value<string>() == "200")
+            {
+                return jsonDoc["data"] as JObject;
+            }
+            return null;
+        }
+
+        public JObject GetDreamUpdate(string dreamId, int page = 1)
+        {
+            var ret = Request(string.Format(NianApiAddr.GetDreamUpdate, dreamId), true,
+                new[] {"page", page.ToString()});
             var jsonDoc = JObject.Parse(ret);
             if (jsonDoc["status"].Value<string>() == "200")
             {

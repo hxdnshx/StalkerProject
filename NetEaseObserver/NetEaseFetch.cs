@@ -32,7 +32,7 @@ namespace StalkerProject.NetEaseObserver
         {
             ProcessStartInfo psi = new ProcessStartInfo("casperjs", "netease.js \"" + TargetUser + "\" \"" + TargetUser + ".json\"");
             //psi.RedirectStandardOutput = true;
-            psi.Verb = "RunAs";
+            //psi.Verb = "RunAs";
             psi.UseShellExecute = false;
             for (;;)
             {
