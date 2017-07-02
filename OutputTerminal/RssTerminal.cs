@@ -63,6 +63,12 @@ namespace OutputTerminal
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
+                    string outputstr=e.ToString() + "\n";
+                    string anotherPart = "模块RssTerminal发生了异常!\n"
+                                         + e.StackTrace
+                                         + "\n"
+                                         + e.InnerException.ToString();
+                    File.AppendAllText("ErrorDump.txt",outputstr+anotherPart);
                 }
             }
         }

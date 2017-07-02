@@ -9,24 +9,39 @@ namespace StalkerProject.NetEaseObserver
 {
     /*
      * 虽然说加Attribute再加Interface好像可以实现代码自动转换，不过现在却丝毫不想那样做
+     * 在对念的数据结构进行构造后
+     * 感觉驾轻就熟了许多啊w
+     * 接下来就开始分析网易云音乐的部分吧
+     * ((总觉得网易云的抓取十分消耗内存,有点害怕
+     * 可能重点会在Freq数据的分析上
+     * 这里如果不弄好算法的话就没什么意义了?
+     * (似乎3个list就能解决的事情)
+     * (时间复杂度O(N)...空间复杂度O(N))
+     * 所以说在骗自己很复杂么((笑
+     * Events用增量
+     * Fans用增量
+     * Follows用增量
+     * PlayList信息用Dictionary如何?会省好多事情
+     * 要做一个通用的增量算法辅助函数呢w
      */
     public class NetEaseData
     {
         /// <summary>
         /// 用于存放始终存在的数据：粉丝，关注等
         /// </summary>
-        public List<StringItem> ListItems { get; set; }
-        public List<StringItem> Follows { get; set; }
-        public List<StringItem> Fans { get; set; }
+        public Dictionary<string,string> ListItems { get; set; }
+        public List<EventData> Events { get; set; }
+        public List<string> Follows { get; set; }
+        public List<string> Fans { get; set; }
         public List<FreqItem> WeeklyFreq { get; set; }
         public List<FreqItem> AllFreq { get; set; }
         public List<PlayList> PlayLists { get; set; }
 
         public void ApplyNotNull()
         {
-            if(ListItems==null)ListItems=new List<StringItem>();
-            if(Follows==null)Follows=new List<StringItem>();
-            if(Fans==null)Fans=new List<StringItem>();
+            if(ListItems==null)ListItems=new Dictionary<string, string>();
+            if(Follows==null)Follows=new List<string>();
+            if(Fans==null)Fans=new List<string>();
             if(WeeklyFreq==null)WeeklyFreq=new List<FreqItem>();
             if(AllFreq==null)AllFreq=new List<FreqItem>();
             if(PlayLists==null)PlayLists=new List<PlayList>();

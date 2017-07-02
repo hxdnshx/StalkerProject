@@ -281,17 +281,10 @@ namespace StalkerProject.NianObserver
 
                 }
             }
-            try
-            {
                 foreach (var dataDream in data.Dreams)
                 {
                     GetDreamExtendInfo(dataDream, data);
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
         }
 
 
@@ -338,34 +331,46 @@ namespace StalkerProject.NianObserver
             var col = db.GetCollection<NianData>();
             for (;;)
             {
-                
-                currentTime = DateTime.Now;
-                //Status Data Compare
-                var result = api.GetUserData(TargetUID.ToString())["user"] as JObject;
-                uName = result["name"].Value<string>();
-                foreach (var obj in result)
+                try
                 {
-                    var val = obj.Value as JValue;
-                    if (val != null)
+                    currentTime = DateTime.Now;
+                    //Status Data Compare
+                    var result = api.GetUserData(TargetUID.ToString())["user"] as JObject;
+                    uName = result["name"].Value<string>();
+                    foreach (var obj in result)
                     {
-                        var targetValue = obj.Value.Value<string>();
-                        var sourceValue = "";
-                        if (data.ListItems.ContainsKey(obj.Key))
-                            sourceValue = data.ListItems[obj.Key];
-                        if (sourceValue != targetValue)
+                        var val = obj.Value as JValue;
+                        if (val != null)
                         {
-                            data.ListItems[obj.Key] = targetValue;
-                            DiffDetected?.Invoke(
-                                "http://nian.so/#!/user/" + TargetUID,
-                                uName + "修改了" + obj.Key,
-                                uName + "修改了" + obj.Key + ",从" + sourceValue + "变为" + targetValue,
-                                "UserInfo." + obj.Key);
+                            var targetValue = obj.Value.Value<string>();
+                            var sourceValue = "";
+                            if (data.ListItems.ContainsKey(obj.Key))
+                                sourceValue = data.ListItems[obj.Key];
+                            if (sourceValue != targetValue)
+                            {
+                                data.ListItems[obj.Key] = targetValue;
+                                DiffDetected?.Invoke(
+                                    "http://nian.so/#!/user/" + TargetUID,
+                                    uName + "修改了" + obj.Key,
+                                    uName + "修改了" + obj.Key + ",从" + sourceValue + "变为" + targetValue,
+                                    "UserInfo." + obj.Key);
+                            }
                         }
                     }
+                    GetDreamList(TargetUID, data);
+                    col.Update(data);
+                    currentPeroid++;
                 }
-                GetDreamList(TargetUID,data);
-                col.Update(data);
-                currentPeroid++;
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    string outputstr = e.ToString() + "\n";
+                    string anotherPart = "模块NianStalker发生了异常!\n"
+                                         + e.StackTrace
+                                         + "\n"
+                                         + e.InnerException.ToString();
+                    File.AppendAllText("ErrorDump.txt", outputstr + anotherPart);
+                }
                 token.WaitHandle.WaitOne(Math.Max(60000, Interval));
                 token.ThrowIfCancellationRequested();
             }
