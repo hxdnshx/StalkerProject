@@ -43,7 +43,7 @@ namespace OutputTerminal
                 //Rebuild RssData
                 try
                 {
-                    var iter = col.Find(Query.All(Query.Descending), limit: 20);
+                    var iter = col.Find(Query.All(Query.Descending), limit: 30);
                     List<SyndicationItem> item = new List<SyndicationItem>();
                     foreach (var val in iter)
                     {
@@ -52,7 +52,8 @@ namespace OutputTerminal
                             Title = new TextSyndicationContent(val.Summary),
                             Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
                             Content = SyndicationContent.CreatePlaintextContent(val.Content),
-                            PublishDate = val.OutputTime
+                            PublishDate = val.OutputTime,
+                            BaseUri = new Uri(val.RelatedAddress)
                         };
                         item.Add(sitem);
                     }

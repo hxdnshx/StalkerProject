@@ -9,20 +9,20 @@
 ## 进度
 1. 抓取目标
  * 网易云（完成）（[netease.js]("https://github.com/hxdnshx/StalkerProject/blob/master/netease.js")）
- + 念（登陆C#实现完成）（登录相关参考[nian-Robot]("https://github.com/ConnorNowhere/nian-robot")）（[API-nian.so]("https://github.com/hxdnshx/StalkerProject/blob/master/API-nian.so")）(直接使用网页抓取,可能会增加浏览计数)
+ + 念（除图片拉取全部完成）（登录相关参考[nian-Robot]("https://github.com/ConnorNowhere/nian-robot")）（[API-nian.so]("https://github.com/hxdnshx/StalkerProject/blob/master/API-nian.so")）(直接使用网页抓取,可能会增加浏览计数)
  + 微博(可登录)
  + QQ（待定）
  + 微信朋友圈（待定）
 2. 数据分析
  + 网易云
- + 念
+ + 念(进行增量Diff,输出新的数据)
  + 微博
  + QQ（待定）
  + 微信朋友圈（待定）
  + 腾讯语义分析对接
 3. 数据输出
  + 邮件
- + RSS
+ + RSS(完成!)
  + 网页报表
 4. 工程部署
  + docker
