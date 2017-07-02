@@ -391,7 +391,19 @@ namespace StalkerProject.NianObserver
             var ret = Request(string.Format(NianApiAddr.GetDreamUpdate, dreamId), true,
                 new[] {"page", page.ToString()});
             var jsonDoc = JObject.Parse(ret);
-            if (jsonDoc["status"].Value<string>() == "200")
+            if (jsonDoc["data"]["steps"]!=null)
+            {
+                return jsonDoc["data"] as JObject;
+            }
+            return null;
+        }
+
+        public JObject GetComments(string stepId, int page = 1)
+        {
+            var ret = Request(string.Format(NianApiAddr.GetStepComments, stepId), true,
+                new[] { "page", page.ToString() });
+            var jsonDoc = JObject.Parse(ret);
+            if (jsonDoc["data"]["comments"] != null)
             {
                 return jsonDoc["data"] as JObject;
             }

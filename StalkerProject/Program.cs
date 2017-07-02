@@ -81,7 +81,7 @@ namespace StalkerProject
                 {
                     var result = server.GetContext();
                     bool isHandled = false;
-                    Console.WriteLine(result);
+                    //Console.WriteLine(result);
                     foreach (var srv in manager.ActiveServices)
                     {
                         if (srv is DomainProxy)

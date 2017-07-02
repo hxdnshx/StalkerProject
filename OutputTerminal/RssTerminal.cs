@@ -41,22 +41,28 @@ namespace OutputTerminal
                 token.WaitHandle.WaitOne(Math.Max(60000,Interval));
                 token.ThrowIfCancellationRequested();
                 //Rebuild RssData
-                
-                var iter = col.Find(Query.All(Query.Descending), limit: 20);
-                List<SyndicationItem> item = new List<SyndicationItem>();
-                foreach (var val in iter)
+                try
                 {
-                    SyndicationItem sitem = new SyndicationItem()
+                    var iter = col.Find(Query.All(Query.Descending), limit: 20);
+                    List<SyndicationItem> item = new List<SyndicationItem>();
+                    foreach (var val in iter)
                     {
-                        Title = new TextSyndicationContent(val.Summary),
-                        Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
-                        Content = SyndicationContent.CreatePlaintextContent(val.Content),
-                        PublishDate = val.OutputTime
-                    };
-                    item.Add(sitem);
+                        SyndicationItem sitem = new SyndicationItem()
+                        {
+                            Title = new TextSyndicationContent(val.Summary),
+                            Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
+                            Content = SyndicationContent.CreatePlaintextContent(val.Content),
+                            PublishDate = val.OutputTime
+                        };
+                        item.Add(sitem);
+                    }
+                    feed.Items = item;
+                    Console.WriteLine("RssData Updated");
                 }
-                feed.Items = item;
-                Console.WriteLine("RssData Updated");
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
         }
 
