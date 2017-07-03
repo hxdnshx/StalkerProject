@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
 
-namespace OutputTerminal
+namespace StalkerProject.OutputTerminal
 {
     class OutputData
     {

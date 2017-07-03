@@ -3,6 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 
+
+/*
+        ~~献给自己已经逝去的，名为“初恋”的感情。~~妈的太蠢了你就这么喜欢STK喽？（虽然感觉对自己已经没用了吧
+     */
 namespace StalkerProject
 {
     public class DomainProxy : ISTKService
@@ -67,7 +71,7 @@ namespace StalkerProject
         {
             ServiceManager manager = new ServiceManager();
             manager.ReadSetting("serviceSetting.xml");
-            //manager.SaveSetting("serviceSetting.xml");
+            manager.SaveSetting("serviceSetting.xml");
             foreach (var srv in manager.ActiveServices)
             {
                 srv.Start();

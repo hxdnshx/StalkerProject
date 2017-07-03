@@ -7,7 +7,7 @@
     <ProjectGuid>{15BE97B5-BB0A-4C10-B9A6-19A42F5E16D5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OutputTerminal</RootNamespace>
+    <RootNamespace>StalkerProject.OutputTerminal</RootNamespace>
     <AssemblyName>OutputTerminal</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DiffDatabase.cs" />
+    <Compile Include="MailTerminal.cs" />
     <Compile Include="OutputData.cs" />
     <Compile Include="RssTerminal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

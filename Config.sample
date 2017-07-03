@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<STKProject>
+  <Services>
+    <Service Class="RssTerminal">
+      <Interval>180000</Interval>
+      <Alias>RSS1</Alias>
+      <FeedId>123462</FeedId>
+      <FeedName>Retrospect53</FeedName>
+    </Service>
+    <Service Class="MailTerminal">
+      <Alias>Mail1</Alias>
+      <Interval>3600000</Interval>
+      <MailPort>25</MailPort>
+      <MailHost>smtp.seu.edu.cn</MailHost>
+      <MailUName>*</MailUName>
+      <MailPWord>*</MailPWord>
+      <MailSSL>false</MailSSL>
+      <MailSender>**</MailSender>
+      <MailTarget>***</MailTarget>
+    </Service>
+    <Service Class="DiffDatabase">
+      <Alias>DB</Alias>
+      <DatabasePath>diff.db</DatabasePath>
+    </Service>
+    <Service Class="NianStalker">
+      <TargetUID>923650</TargetUID>
+      <Interval>3600000</Interval>
+      <UserName>****</UserName>
+      <PassWord>**</PassWord>
+      <Alias>Nian</Alias>
+    </Service>
+    <Service Class="DomainProxy">
+      <Alias>RSSProxy</Alias>
+      <SubUrl>/RSS</SubUrl>
+    </Service>
+  </Services>
+  <Connections>
+    <Connection>
+      <From>RSS1.GetDatabase</From>
+      <To>DB.DatabaseSource</To>
+    </Connection>
+    <Connection>
+      <From>Mail1.GetDatabase</From>
+      <To>DB.DatabaseSource</To>
+    </Connection>
+    <Connection>
+      <From>DB.InputData</From>
+      <To>Nian.DiffDetected</To>
+    </Connection>
+    <Connection>
+      <From>RSS1.DisplayRss</From>
+      <To>RSSProxy.OnRequest</To>
+    </Connection>
+  </Connections>
+</STKProject>

@@ -4,6 +4,7 @@
 *.session
 *.db
 *.txt
+*.shortcut
 
 #ignore thumbnails created by windows
 Thumbs.db

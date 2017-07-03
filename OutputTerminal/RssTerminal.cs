@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.ServiceModel.Syndication;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using LiteDB;
-using StalkerProject;
 
-namespace OutputTerminal
+namespace StalkerProject.OutputTerminal
 {
     public class RssTerminal : ISTKService
     {
@@ -19,13 +16,13 @@ namespace OutputTerminal
         public string Alias { get; set; }
         public int FeedId { get; set; }
         public string FeedName { get; set; }
-        private LiteDatabase database;
+        private LiteDatabase database=null;
         private SyndicationFeed feed;
         private Task updateJob;
         private CancellationTokenSource isCancel;
         public void Start()
         {
-            database=new LiteDatabase(Alias + ".db");
+            
             feed=new SyndicationFeed(FeedName,"Provided By StalkerProject",
                 new Uri("http://127.0.0.1"),"id=" + FeedId.ToString(),DateTime.Now);
             isCancel=new CancellationTokenSource();
@@ -33,13 +30,22 @@ namespace OutputTerminal
             updateJob.Start();
         }
 
+        public void GetDatabase(LiteDatabase db)
+        {
+            database = db;
+        }
+
         public void UpdateLoop(CancellationToken token)
         {
+            token.WaitHandle.WaitOne(10000);//WaitFor 10 seconds
+            if (database == null)
+            {
+                Console.WriteLine("No DiffDatabase connected,Service Terminate");
+            }
             var col = database.GetCollection<OutputData>();
             for (;;)
             {
-                token.WaitHandle.WaitOne(Math.Max(60000,Interval));
-                token.ThrowIfCancellationRequested();
+                
                 //Rebuild RssData
                 try
                 {
@@ -59,6 +65,7 @@ namespace OutputTerminal
                     }
                     feed.Items = item;
                     Console.WriteLine("RssData Updated");
+
                 }
                 catch (Exception e)
                 {
@@ -70,11 +77,18 @@ namespace OutputTerminal
                                          + e.InnerException.ToString();
                     File.AppendAllText("ErrorDump.txt",outputstr+anotherPart);
                 }
+                token.WaitHandle.WaitOne(Math.Max(60000, Interval));
+                token.ThrowIfCancellationRequested();
             }
         }
 
         public void Stop()
         {
+            if (updateJob.IsCompleted)
+            {
+                isCancel.Dispose();
+                return;
+            }
             isCancel.Cancel();
             try
             {
@@ -113,19 +127,6 @@ namespace OutputTerminal
             }
         }
 
-        [STKDescription("录入新的数据")]
-        public void InputData(string RelatedAddress, string Summary, string Content, string RelatedVar)
-        {
-            var col=database.GetCollection<OutputData>();
-            col.Insert(new OutputData()
-            {
-                RelatedAddress = RelatedAddress,
-                Summary = Summary,
-                Content = Content,
-                RelatedVar = RelatedVar,
-                OutputTime = DateTime.Now
-            });
-            
-        }
+        
     }
 }
