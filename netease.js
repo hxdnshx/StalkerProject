@@ -51,10 +51,14 @@ var fan;
 var intro;
 var playCount;
 var imgPath;
+var nickname;
+var uid;
 casper.waitForSelector('strong[id="event_count"]',null,null,10000);
 casper.then(function(){
 	this.echo("Load Complete");
 	//this.capture('wyyyy.png');
+	nickname = this.fetchText('span.f-ff2.s-fc0');
+	uid = this.getElementAttribute('ul.data.s-fc3 a','href').replace(/\/user\/event\?id=/,'');
 	event = this.fetchText('strong[id="event_count"]');
 	follow = this.fetchText('strong[id="follow_count"]');
 	fan = this.fetchText('strong[id="fan_count"]');
@@ -65,6 +69,7 @@ casper.then(function(){
 	if(this.exists('dt#ava img'))
 		imgPath=this.getElementAttribute('dt#ava img','src');
 	intro = this.fetchText('div.f-brk').replace(/个人介绍：/,'');
+	casper.echo('NickName:' + nickname + 'uid:' + uid);
 	casper.echo('Event:' + event + ' Follow:' + follow + ' Fan:' + fan);
 	status={'event':event,'follow':follow,'fan':fan};
 });
@@ -357,7 +362,9 @@ casper.run(function(){
 			'fan' : fan,
 			'intro' : intro,
 			'playCount' : playCount,
-			'imgPath' : imgPath
+			'imgPath' : imgPath,
+			'name' : nickname,
+			'uid' : uid
 		},
 		'shares' : shares,
 		'follows' : follows,

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using ThreadState = System.Threading.ThreadState;
 
 namespace StalkerProject.NetEaseObserver
@@ -43,9 +44,9 @@ namespace StalkerProject.NetEaseObserver
                     Console.WriteLine("Fetch Failed.");
                 else
                 {
-                    string ret = JsonHelper.ConvertJsonToXml(TargetUser + ".json");
-                    File.WriteAllText(TargetUser + ".xml",ret);
-                    OnDataFetched?.Invoke(TargetUser,ret);
+                    string ret = File.ReadAllText(TargetUser + ".json");
+                    JObject obj=JObject.Parse(ret);
+                    OnDataFetched?.Invoke(TargetUser,obj);
                     Console.WriteLine("Message Fetched.");
                 }
 
@@ -68,6 +69,6 @@ namespace StalkerProject.NetEaseObserver
         }
 
         [STKDescription("当新的数据被拉取时")]
-        public Action<string,string> OnDataFetched { get; set; }
+        public Action<string,JObject> OnDataFetched { get; set; }
     }
 }

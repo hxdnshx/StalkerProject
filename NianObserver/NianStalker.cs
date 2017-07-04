@@ -359,6 +359,7 @@ namespace StalkerProject.NianObserver
                     }
                     GetDreamList(TargetUID, data);
                     col.Update(data);
+                    Console.WriteLine( Alias + ":Data Fetched");
                     currentPeroid++;
                 }
                 catch (Exception e)
