@@ -73,7 +73,9 @@ namespace StalkerProject.OutputTerminal
                     BodyEncoding = Encoding.UTF8,
                     IsBodyHtml = false
                 };
+                client.Timeout=10000;
                 client.Send(mail);
+                Console.WriteLine("Mail Sent");
                 File.WriteAllText(checkFile,DateTime.Now.ToString());
                 LastCheckTime = DateTime.Now;
                 token.WaitHandle.WaitOne(Math.Max(Interval, 3600000));
