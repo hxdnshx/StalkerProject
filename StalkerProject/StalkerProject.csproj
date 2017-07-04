@@ -65,9 +65,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NetEaseObserver\NetEaseObserver.csproj">
+      <Project>{569706c7-18c6-4e89-96bb-87da15ba06fb}</Project>
+      <Name>NetEaseObserver</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NianObserver\NianObserver.csproj">
       <Project>{846a0a4e-fd93-43e4-bb6e-a8d2ed57527f}</Project>
       <Name>NianObserver</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OutputTerminal\OutputTerminal.csproj">
+      <Project>{15be97b5-bb0a-4c10-b9a6-19a42f5e16d5}</Project>
+      <Name>OutputTerminal</Name>
     </ProjectReference>
     <ProjectReference Include="..\STKCore\STKCore.csproj">
       <Project>{572e0c6f-b262-4070-b816-b4b7e5680823}</Project>
