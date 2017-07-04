@@ -54,7 +54,7 @@ var imgPath;
 casper.waitForSelector('strong[id="event_count"]',null,null,10000);
 casper.then(function(){
 	this.echo("Load Complete");
-	this.capture('wyyyy.png');
+	//this.capture('wyyyy.png');
 	event = this.fetchText('strong[id="event_count"]');
 	follow = this.fetchText('strong[id="follow_count"]');
 	fan = this.fetchText('strong[id="fan_count"]');
@@ -138,7 +138,7 @@ casper.then(function(){
 		}
 		currentPage++;
 		if(currentPage>maxPages)return;
-		casper.captureSelector('test3.png','a.znxt');
+		//casper.captureSelector('test3.png','a.znxt');
 		if(casper.exists('a.zbtn.znxt') && !casper.exists('a.zbtn.znxt.js-disabled'))
 		{
 			casper.click('a.zbtn.znxt');
@@ -186,7 +186,7 @@ casper.then(function(){
 		}
 		currentPage++;
 		if(currentPage>maxPages)return;
-		casper.captureSelector('test3.png','a.znxt');
+		//casper.captureSelector('test3.png','a.znxt');
 		if(casper.exists('a.zbtn.znxt') && !casper.exists('a.zbtn.znxt.js-disabled'))
 		{
 			casper.click('a.zbtn.znxt');
@@ -300,7 +300,7 @@ casper.back();
 var PlayLists=new Array();
 casper.waitForSelector('ul#cBox a.tit.f-thide.s-fc0');
 casper.then(function(){
-	this.capture('test3.png');
+	//this.capture('test3.png');
 	var links=this.getElementsAttribute('ul#cBox a.tit.f-thide.s-fc0','href');
 	var iter;
 	this.echo('playList Count:' + links.length);
