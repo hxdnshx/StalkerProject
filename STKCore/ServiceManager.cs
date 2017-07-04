@@ -17,9 +17,10 @@ namespace StalkerProject
 
         public static string GetExePath()
         {
-            var proc = System.Diagnostics.Process.GetCurrentProcess();
-            FileInfo fi=new FileInfo(proc.MainModule.FileName);
-            return fi.DirectoryName;
+            //Ref: https://stackoverflow.com/questions/6246074/mono-c-sharp-get-application-path
+            var procPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            //FileInfo fi=new FileInfo(procPath);
+            return procPath;
         }
 
         /// <summary>
