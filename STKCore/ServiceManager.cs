@@ -57,17 +57,24 @@ namespace StalkerProject
                 }
             }
             var enumPath = GetExePath();
+            Console.WriteLine("Load Assemblies in " + enumPath);
             var dllList = Directory.GetFiles(enumPath, "*.dll");
             foreach (var file in dllList)
             {
                 FileInfo fi=new FileInfo(file);
                 if (loadedAssemblyList.Contains(fi.Name)) continue;
+                Console.WriteLine("Found:" + fi.FullName);
                 var assembly = Assembly.LoadFrom(file);
                 foreach (var aType in assembly.GetTypes())
                 {
                     if (aType.GetInterfaces().Contains(typeof(ISTKService)))
                         ServiceTypes.Add(aType.Name, aType);
                 }
+            }
+            Console.WriteLine("Found STKServices:");
+            foreach (var serviceType in ServiceTypes)
+            {
+                Console.WriteLine("Srv:" + serviceType.Key);
             }
         }
 
