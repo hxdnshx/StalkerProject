@@ -49,7 +49,7 @@ namespace StalkerProject.OutputTerminal
                 Summary = Summary,
                 Content = Content,
                 RelatedVar = RelatedVar,
-                OutputTime = DateTime.Now
+                //OutputTime = DateTime.Now
             });
             
             //trans.Commit();

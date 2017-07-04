@@ -58,7 +58,7 @@ namespace StalkerProject.OutputTerminal
                             Title = new TextSyndicationContent(val.Summary),
                             Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
                             Content = SyndicationContent.CreatePlaintextContent(val.Content),
-                            PublishDate = val.OutputTime,
+                            //PublishDate = val.OutputTime,
                             Links = { new SyndicationLink(new Uri(val.RelatedAddress)) }
                         };
                         item.Add(sitem);
