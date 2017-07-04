@@ -48,10 +48,10 @@ namespace StalkerProject.OutputTerminal
                 Console.WriteLine("Col" + col.ToString());
                 col.Insert(new OutputData()
                 {
-                    RelatedAddress = RelatedAddress,
-                    Summary = Summary,
-                    Content = Content,
-                    RelatedVar = RelatedVar,
+                    RelatedAddress = "111",
+                    Summary = "222",
+                    Content = "333",
+                    RelatedVar = "444",
                     OutputTime = DateTime.Now
                 });
                 Console.WriteLine("Inserted");
