@@ -37,21 +37,25 @@ namespace StalkerProject.OutputTerminal
         [STKDescription("数据源设置")]
         public Action<LiteDatabase> DatabaseSource { get; set; }
 
-
+        object lck=new object;
         [STKDescription("录入新的数据")]
         public void InputData(string RelatedAddress, string Summary, string Content, string RelatedVar)
         {
             //var trans = database.BeginTrans();
-            var col = database.GetCollection<OutputData>();
-            col.Insert(new OutputData()
+            lock (lck)
             {
-                RelatedAddress = RelatedAddress,
-                Summary = Summary,
-                Content = Content,
-                RelatedVar = RelatedVar,
-                OutputTime = DateTime.Now
-            });
-            
+                var col = database.GetCollection<OutputData>();
+                Console.WriteLine(col.ToString());
+                col.Insert(new OutputData()
+                {
+                    RelatedAddress = RelatedAddress,
+                    Summary = Summary,
+                    Content = Content,
+                    RelatedVar = RelatedVar,
+                    OutputTime = DateTime.Now
+                });
+            }
+
             //trans.Commit();
         }
     }
