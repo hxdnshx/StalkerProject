@@ -18,6 +18,16 @@ namespace StalkerProject.OutputTerminal
                 DatabasePath = Alias + ".db";
             database=new LiteDatabase(DatabasePath);
             DatabaseSource?.Invoke(database);
+            var col = database.GetCollection<OutputData>();
+            Console.WriteLine("Col" + col.ToString());
+            col.Insert(new OutputData()
+            {
+                RelatedAddress = "111",
+                Summary = "222",
+                Content = "333",
+                RelatedVar = "444",
+                OutputTime = DateTime.Now
+            });
         }
 
         public void Stop()
@@ -36,27 +46,13 @@ namespace StalkerProject.OutputTerminal
          */
         [STKDescription("数据源设置")]
         public Action<LiteDatabase> DatabaseSource { get; set; }
-
-        object lck=new object();
+        
         [STKDescription("录入新的数据")]
         public void InputData(string RelatedAddress, string Summary, string Content, string RelatedVar)
         {
             //var trans = database.BeginTrans();
-            lock (lck)
-            {
-                var col = database.GetCollection<OutputData>();
-                Console.WriteLine("Col" + col.ToString());
-                col.Insert(new OutputData()
-                {
-                    RelatedAddress = "111",
-                    Summary = "222",
-                    Content = "333",
-                    RelatedVar = "444",
-                    OutputTime = DateTime.Now
-                });
+                
                 Console.WriteLine("Inserted");
-            }
-
             //trans.Commit();
         }
     }
