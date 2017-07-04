@@ -57,8 +57,9 @@ namespace StalkerProject.OutputTerminal
                         {
                             Title = new TextSyndicationContent(val.Summary),
                             Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
-                            Content = SyndicationContent.CreatePlaintextContent(val.Content + "\n" + val.RelatedAddress),
-                            PublishDate = val.OutputTime//
+                            Content = SyndicationContent.CreatePlaintextContent(val.Content),
+                            PublishDate = val.OutputTime,
+                            Links = { new SyndicationLink(new Uri(val.RelatedAddress)) }
                         };
                         item.Add(sitem);
                     }
@@ -116,7 +117,8 @@ namespace StalkerProject.OutputTerminal
         [STKDescription("输出RSS信息")]
         public void DisplayRss(HttpListenerContext context)
         {
-            feed.BaseUri = context.Request.Url;
+            feed.Links.Clear();
+            feed.Links.Add(SyndicationLink.CreateSelfLink(context.Request.Url));//.BaseUri = context.Request.Url;
             using (StreamWriter writer = new StreamWriter(context.Response.OutputStream))
             {
                 XmlWriter xmlWriter = XmlWriter.Create(writer);
