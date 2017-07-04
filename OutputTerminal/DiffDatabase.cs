@@ -16,8 +16,8 @@ namespace StalkerProject.OutputTerminal
         {
             if (string.IsNullOrWhiteSpace(DatabasePath))
                 DatabasePath = Alias + ".db";
+            Console.WriteLine("Created" + DatabasePath);
             database=new LiteDatabase(DatabasePath);
-            DatabaseSource?.Invoke(database);
             var col = database.GetCollection<OutputData>();
             Console.WriteLine("Col" + col.ToString());
             col.Insert(new OutputData()
@@ -28,6 +28,7 @@ namespace StalkerProject.OutputTerminal
                 RelatedVar = "444",
                 OutputTime = DateTime.Now
             });
+            DatabaseSource?.Invoke(database);
         }
 
         public void Stop()
