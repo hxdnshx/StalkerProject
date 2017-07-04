@@ -122,7 +122,7 @@ namespace StalkerProject.OutputTerminal
             using (StreamWriter writer = new StreamWriter(context.Response.OutputStream))
             {
                 XmlWriter xmlWriter = XmlWriter.Create(writer);
-                feed.SaveAsRss20(xmlWriter);
+                feed.SaveAsAtom10(xmlWriter);
                 xmlWriter.Close();
                 context.Response.Close();
             }
