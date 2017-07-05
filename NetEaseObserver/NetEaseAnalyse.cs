@@ -135,7 +135,7 @@ namespace StalkerProject.NetEaseObserver
                 bool isFoundHead = false;
                 DataHelper.IncrementalLoop(ref pos, ref isFoundHead,
                     (JArray)newData["fans"].AsJEnumerable(),
-                    data.Follows,
+                    data.Fans,
                     follow => new RemovableString() { Value = follow.Value<string>() },
                     (a, b) => !a.IsRemoved && !b.IsRemoved && a.Value.Equals(b.Value),
                     info =>
