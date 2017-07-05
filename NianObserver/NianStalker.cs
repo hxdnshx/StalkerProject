@@ -38,7 +38,8 @@ namespace StalkerProject.NianObserver
             //Origin Target
             int unresolvedDiff = 0;
             bool isAllResolved = false;
-            int pos = dream.Steps.Count - 1;
+            int pos = dream.Steps.FindLastIndex(info => info.IsRemoved == false);
+            
             bool isFoundHead = false;//是否找到最近出现的元素
             List<StepInfo> pendingInsert=new List<StepInfo>();
             for (int page = 1; page <= maxPage; page++)
@@ -137,9 +138,9 @@ namespace StalkerProject.NianObserver
                             throw new Exception("???WTF???");
                         for (int j = index + 1; j <= pos; j++)
                         {
-                            if (!dream.Steps[j].isRemoved)
+                            if (!dream.Steps[j].IsRemoved)
                             {
-                                dream.Steps[j].isRemoved = true;
+                                dream.Steps[j].IsRemoved = true;
                                 unresolvedDiff++;
                                 DiffDetected?.Invoke(
                                     "http://nian.so/m/dream/" + dream.Status["id"],
@@ -179,7 +180,7 @@ namespace StalkerProject.NianObserver
             bool isFoundHead = false;
             List<CommentInfo> pendingInsert=new List<CommentInfo>();
             bool isAllResolved = false;
-            int pos = step.Comments.Count - 1;
+            int pos = step.Comments.FindLastIndex(info => info.IsRemoved == false);
             int maxPage = (int)Math.Ceiling(int.Parse(step.Status["comments"])/15.0f);
             string sid = step.Status["sid"];
             for (int page = 1; page <= maxPage; page++)
@@ -218,9 +219,9 @@ namespace StalkerProject.NianObserver
                             throw new Exception("??????WTF");
                         for (int j = index + 1; j <= pos; j++)
                         {
-                            if (!step.Comments[j].isRemoved)
+                            if (!step.Comments[j].IsRemoved)
                             {
-                                step.Comments[j].isRemoved = true;
+                                step.Comments[j].IsRemoved = true;
                                 unresolvedComments++;
                                 DiffDetected?.Invoke(
                                     "http://nian.so/m/step/" + step.Status["sid"],

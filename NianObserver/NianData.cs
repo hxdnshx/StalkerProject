@@ -44,7 +44,7 @@ namespace StalkerProject.NianObserver
         public List<StepInfo> Steps { get; set; }
     }
 
-    public class StepInfo
+    public class StepInfo : IRemoveFlag
     {
         public ObjectId Id { get; set; }
         public List<string> Images { get; set; }
@@ -53,13 +53,13 @@ namespace StalkerProject.NianObserver
         /*
          * StepInfo中,因为会影响到增量计数,所以还是加上isRemoved标识了
          */
-        public bool isRemoved { get; set; }
+        public bool IsRemoved { get; set; }
     }
 
-    public class CommentInfo
+    public class CommentInfo : IRemoveFlag
     {
         public ObjectId Id { get; set; }
         public Dictionary<string,string> Status { get; set; }
-        public bool isRemoved { get; set; }
+        public bool IsRemoved { get; set; }
     }
 }
