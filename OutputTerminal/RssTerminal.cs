@@ -6,6 +6,8 @@ using System.ServiceModel.Syndication;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Security.Cryptography;
+using System.Text;
 using LiteDB;
 
 namespace StalkerProject.OutputTerminal
@@ -35,6 +37,23 @@ namespace StalkerProject.OutputTerminal
             database = db;
         }
 
+        static SHA256 hash = new SHA256Managed();
+        public static string GetStringHash(string str)
+        {
+            {
+                byte[] data = hash.ComputeHash(Encoding.Default.GetBytes(str));
+                StringBuilder sBuilder = new StringBuilder();
+
+                // Loop through each byte of the hashed data 
+                // and format each one as a hexadecimal string.
+                for (int i = 0; i < data.Length; i++)
+                {
+                    sBuilder.Append(data[i].ToString("x2"));
+                }
+                return sBuilder.ToString();
+            }
+        }
+
         public void UpdateLoop(CancellationToken token)
         {
             token.WaitHandle.WaitOne(10000);//WaitFor 10 seconds
@@ -43,6 +62,7 @@ namespace StalkerProject.OutputTerminal
                 Console.WriteLine("No DiffDatabase connected,Service Terminate");
             }
             var col = database.GetCollection<OutputData>();
+            
             for (;;)
             {
                 
@@ -51,6 +71,7 @@ namespace StalkerProject.OutputTerminal
                 {
                     var iter = col.Find(Query.All(Query.Descending), limit: 30);
                     List<SyndicationItem> item = new List<SyndicationItem>();
+                    
                     foreach (var val in iter)
                     {
                         SyndicationItem sitem = new SyndicationItem()
@@ -59,7 +80,8 @@ namespace StalkerProject.OutputTerminal
                             Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
                             Content = SyndicationContent.CreatePlaintextContent(val.Content),
                             PublishDate = val.OutputTime,
-                            Links = { new SyndicationLink(new Uri(val.RelatedAddress)) }
+                            Links = { new SyndicationLink(new Uri(val.RelatedAddress)) },
+                            Id=GetStringHash(val.Summary)
                         };
                         item.Add(sitem);
                     }
