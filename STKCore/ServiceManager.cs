@@ -138,8 +138,8 @@ namespace StalkerProject
                 string toPort = to[1];
                 ISTKService fromSrv;
                 ISTKService toSrv;
-                if((fromSrv=ActiveServices.FirstOrDefault(srv=>srv.Alias==fromAlias))==null)continue;
-                if((toSrv = ActiveServices.FirstOrDefault(srv => srv.Alias == toAlias)) == null) continue;
+                if((fromSrv=ActiveServices.FirstOrDefault(srv=>srv.Alias==fromAlias))==null)throw new Exception("找不到"+ fromAlias);
+                if((toSrv = ActiveServices.FirstOrDefault(srv => srv.Alias == toAlias)) == null) throw new Exception("找不到" + toSrv);
                 var fromType = fromSrv.GetType();
                 var toType = toSrv.GetType();
                 var fromMethodInfo = fromType.GetMethod(fromMethod);

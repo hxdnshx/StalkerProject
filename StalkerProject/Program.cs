@@ -71,7 +71,7 @@ namespace StalkerProject
         {
             ServiceManager manager = new ServiceManager();
             manager.ReadSetting("serviceSetting.xml");
-            manager.SaveSetting("serviceSetting.xml");
+            //manager.SaveSetting("serviceSetting.xml");
             foreach (var srv in manager.ActiveServices)
             {
                 srv.Start();
