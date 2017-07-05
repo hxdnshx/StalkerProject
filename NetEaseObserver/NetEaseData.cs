@@ -1,8 +1,10 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LiteDB;
 using Newtonsoft.Json.Linq;
 
 namespace StalkerProject.NetEaseObserver
@@ -26,53 +28,66 @@ namespace StalkerProject.NetEaseObserver
      */
     public class NetEaseData
     {
+        public ObjectId Id { get; set; }
         /// <summary>
         /// 用于存放始终存在的数据：粉丝，关注等
         /// </summary>
         public Dictionary<string,string> ListItems { get; set; }
         public List<EventData> Events { get; set; }
-        public List<string> Follows { get; set; }
-        public List<string> Fans { get; set; }
-        public List<FreqItem> WeeklyFreq { get; set; }
-        public List<FreqItem> AllFreq { get; set; }
+        public List<RemovableString> Follows { get; set; }
+        public List<RemovableString> Fans { get; set; }
+        public string WeeklyFreq { get; set; }
+        public string AllFreq { get; set; }
         public List<PlayList> PlayLists { get; set; }
 
         public void ApplyNotNull()
         {
             if(ListItems==null)ListItems=new Dictionary<string, string>();
-            if(Follows==null)Follows=new List<string>();
-            if(Fans==null)Fans=new List<string>();
-            if(WeeklyFreq==null)WeeklyFreq=new List<FreqItem>();
-            if(AllFreq==null)AllFreq=new List<FreqItem>();
+            if(Follows==null)Follows=new List<RemovableString>();
+            if(Fans==null)Fans=new List<RemovableString>();
+            if (WeeklyFreq == null) WeeklyFreq = "";
+            if(AllFreq==null)AllFreq="";
             if(PlayLists==null)PlayLists=new List<PlayList>();
         }
     }
 
-    public class EventData
+    public class EventData : IRemoveFlag
     {
+        public ObjectId Id { get; set; }
         public string SongName { get; set; }
         public string SongArtist { get; set; }
         public string Comment { get; set; }
+        public string RelatedLink { get; set; }
 
-        public void FromJson(JObject obj)
+        public static EventData FromJson(JObject obj)
         {
-            SongName = obj["songName"].Value<string>();
-            SongArtist = obj["songArtist"].Value<string>();
-            Comment = obj["comment"].Value<string>();
+            return new EventData()
+            {
+                SongName = obj["songName"].Value<string>(),
+                SongArtist = obj["songArtist"].Value<string>(),
+                Comment = obj["comment"].Value<string>(),
+                RelatedLink = obj["href"].Value<string>()
+            };
         }
+
+        public bool IsRemoved { get; set; }
     }
 
     public class FreqItem
     {
+        public ObjectId Id { get; set; }
         public string SongName { get; set; }
         public string SongArtist { get; set; }
         public int Percent { get; set; }
 
-        public void FromJson(JObject obj)
+        public static FreqItem FromJson(JObject obj)
         {
-            SongName = obj["songName"].Value<string>();
-            SongArtist = obj["songArtist"].Value<string>();
-            Percent = obj["percent"].Value<int>();
+            return new FreqItem()
+            {
+                SongName = obj["songName"].Value<string>(),
+                SongArtist = obj["songArtist"].Value<string>(),
+                Percent = obj["percent"].Value<int>()
+            };
         }
     }
 
@@ -100,15 +115,26 @@ namespace StalkerProject.NetEaseObserver
             ]
         }
      * */
-    public class PlayList
+    public class PlayList : IRemoveFlag
     {
-        public int PlayListId { get; set; }
-        public string PlayListName { get; set; }
-        public int PlayCount { get; set; }
-        public string Description { get; set; }
-        public int FavCount { get; set; }
-        public int CommentCount { get; set; }
-        public List<StringItem> MusicList { get; set; }
+        public Dictionary<string,string> ListItems { get; set; }
+        public List<RemovableString> MusicList { get; set; }
+        public bool IsRemoved { get; set; }
     }
-    
+
+    public class RemovableString : IRemoveFlag
+    {
+        public ObjectId Id { get; set; }
+        public string Value { get; set; }
+        public bool IsRemoved { get; set; }
+        public static explicit operator string(RemovableString str)
+        {
+            return str.Value;
+        }
+
+        public override string ToString()
+        {
+            return Value;
+        }
+    }
 }

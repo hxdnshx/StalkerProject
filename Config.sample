@@ -23,11 +23,19 @@
       <DatabasePath>diff.db</DatabasePath>
     </Service>
     <Service Class="NianStalker">
-      <TargetUID>923650</TargetUID>
+      <TargetUID>938737</TargetUID>
       <Interval>3600000</Interval>
       <UserName>****</UserName>
       <PassWord>**</PassWord>
       <Alias>Nian</Alias>
+    </Service>
+    <Service Class="NetEaseFetch">
+      <Alias>Fetch1</Alias>
+      <Interval>3600000</Interval>
+      <TargetUser>intheflickering</TargetUser>
+    </Service>
+    <Service Class="NetEaseAnalyse">
+      <Alias>Analyse1</Alias>
     </Service>
     <Service Class="DomainProxy">
       <Alias>RSSProxy</Alias>
@@ -35,6 +43,14 @@
     </Service>
   </Services>
   <Connections>
+    <Connection>
+      <From>DB.InputData</From>
+      <To>Analyse1.DiffDetected</To>
+    </Connection>
+    <Connection>
+      <From>Analyse1.OnDataUpdated</From>
+      <To>Fetch1.OnDataFetched</To>
+    </Connection>
     <Connection>
       <From>RSS1.GetDatabase</From>
       <To>DB.DatabaseSource</To>

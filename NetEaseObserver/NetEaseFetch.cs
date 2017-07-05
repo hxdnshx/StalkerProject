@@ -46,7 +46,7 @@ namespace StalkerProject.NetEaseObserver
                 {
                     string ret = File.ReadAllText(TargetUser + ".json");
                     JObject obj=JObject.Parse(ret);
-                    OnDataFetched?.Invoke(TargetUser,obj);
+                    OnDataFetched?.Invoke(obj);
                     Console.WriteLine("Message Fetched.");
                 }
 
@@ -69,6 +69,6 @@ namespace StalkerProject.NetEaseObserver
         }
 
         [STKDescription("当新的数据被拉取时")]
-        public Action<string,JObject> OnDataFetched { get; set; }
+        public Action<JObject> OnDataFetched { get; set; }
     }
 }

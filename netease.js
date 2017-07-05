@@ -99,7 +99,7 @@ casper.then(function(){
 	{
 		var comment=this.fetchText('div#' + shareList[i] + ' div.text');
 		var href=this.getElementAttribute(
-			'div#' + shareList[i] + ' a.s-fc1','href');
+			'div#' + shareList[i] + ' a.s-fc4','href');
 		var songName=this.fetchText(
 			'div#' + shareList[i] + ' a.s-fc1');
 		var songArtist=this.fetchText(
