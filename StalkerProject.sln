@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StalkerProject", "StalkerProject\StalkerProject.csproj", "{7B4B8122-0117-4580-B783-56EB86ED03F1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{846A0A4E-FD93-43E4-BB6E-A8D2ED57527F} = {846A0A4E-FD93-43E4-BB6E-A8D2ED57527F}
+		{6B5539A1-52B1-4019-B08F-2860DE8A82BC} = {6B5539A1-52B1-4019-B08F-2860DE8A82BC}
 		{15BE97B5-BB0A-4C10-B9A6-19A42F5E16D5} = {15BE97B5-BB0A-4C10-B9A6-19A42F5E16D5}
 		{569706C7-18C6-4E89-96BB-87DA15BA06FB} = {569706C7-18C6-4E89-96BB-87DA15BA06FB}
 	EndProjectSection
@@ -17,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NianObserver", "NianObserver\NianObserver.csproj", "{846A0A4E-FD93-43E4-BB6E-A8D2ED57527F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutputTerminal", "OutputTerminal\OutputTerminal.csproj", "{15BE97B5-BB0A-4C10-B9A6-19A42F5E16D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BilibiliObserver", "BilibiliObserver\BilibiliObserver.csproj", "{6B5539A1-52B1-4019-B08F-2860DE8A82BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +47,10 @@ Global
 		{15BE97B5-BB0A-4C10-B9A6-19A42F5E16D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15BE97B5-BB0A-4C10-B9A6-19A42F5E16D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15BE97B5-BB0A-4C10-B9A6-19A42F5E16D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B5539A1-52B1-4019-B08F-2860DE8A82BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B5539A1-52B1-4019-B08F-2860DE8A82BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B5539A1-52B1-4019-B08F-2860DE8A82BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B5539A1-52B1-4019-B08F-2860DE8A82BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
