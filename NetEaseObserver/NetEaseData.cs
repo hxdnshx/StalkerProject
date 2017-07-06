@@ -118,8 +118,13 @@ namespace StalkerProject.NetEaseObserver
     public class PlayList : IRemoveFlag
     {
         public Dictionary<string,string> ListItems { get; set; }
-        public List<RemovableString> MusicList { get; set; }
+        public List<SongInfo> MusicList { get; set; }
         public bool IsRemoved { get; set; }
+    }
+
+    public class SongInfo : RemovableString
+    {
+        public int SongId { get; set; }
     }
 
     public class RemovableString : IRemoveFlag

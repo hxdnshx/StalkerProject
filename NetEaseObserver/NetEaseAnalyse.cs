@@ -291,7 +291,7 @@ namespace StalkerProject.NetEaseObserver
                     {
                         currentList = new PlayList
                         {
-                            MusicList = new List<RemovableString>(),
+                            MusicList = new List<SongInfo>(),
                             ListItems = new Dictionary<string, string>()
                         };
                         data.PlayLists.Add(currentList);
@@ -315,8 +315,8 @@ namespace StalkerProject.NetEaseObserver
                     int pos = -1;
                     bool IsFoundHead = false;
                     DataHelper.IncrementalLoop(ref pos,ref IsFoundHead,(JArray)playList["musicList"],currentList.MusicList,
-                        src=>new RemovableString() {Value = src.Value<string>()},
-                        (a, b) => !a.IsRemoved && !b.IsRemoved && a.Value.Equals(b.Value),
+                        src=>new SongInfo() {Value = src["songName"].Value<string>(),SongId = src["id"].Value<int>()},
+                        (a, b) => !a.IsRemoved && !b.IsRemoved && a.SongId==b.SongId,
                         music =>
                         {
                             DiffDetected?.Invoke(

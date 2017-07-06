@@ -338,7 +338,7 @@ casper.then(function(){
 					var songName=specialSelect(musicList[i],'div.f-cb div.tt div.ttc span.txt a b','title');
 					var songId=specialSelect(musicList[i],'div.f-cb div.tt div.ttc span.txt a','href').replace(/\/song\?id=/,'');
 					if(songName == null || songName == '')continue;
-					songData.push(songName + '(' + songId + ')');
+					songData.push({'songName' : songName, 'id' : songId});
 					this.echo('song:' + songName);
 				}
 			}
