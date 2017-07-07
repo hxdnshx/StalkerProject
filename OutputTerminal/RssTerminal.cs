@@ -80,6 +80,7 @@ namespace StalkerProject.OutputTerminal
                             Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
                             Content = SyndicationContent.CreatePlaintextContent(val.Content),
                             PublishDate = val.OutputTime,
+                            LastUpdatedTime = val.OutputTime,
                             Links = { new SyndicationLink(new Uri(val.RelatedAddress)) },
                             Id=GetStringHash(val.Summary)
                         };
@@ -96,7 +97,7 @@ namespace StalkerProject.OutputTerminal
                     string anotherPart = "模块RssTerminal发生了异常!\n"
                                          + e.StackTrace
                                          + "\n"
-                                         + e.InnerException.ToString();
+                                         + e.InnerException;
                     File.AppendAllText("ErrorDump.txt",outputstr+anotherPart);
                 }
                 token.WaitHandle.WaitOne(Math.Max(60000, Interval));

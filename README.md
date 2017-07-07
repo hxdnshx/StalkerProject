@@ -7,26 +7,26 @@
 
 ## 进度
 1. 抓取目标
- + [x] 网易云（完成）（[netease.js](https://github.com/hxdnshx/StalkerProject/blob/master/netease.js)）
- + [x] 念（除图片拉取全部完成）（登录相关参考[nian-Robot](https://github.com/ConnorNowhere/nian-robot)）（[API-nian.so](https://github.com/hxdnshx/StalkerProject/blob/master/API-nian.so)）(直接使用网页抓取,可能会增加浏览计数)
- + [ ] 微博(可登录)
- + [ ] QQ（待定）
- + [ ] 微信朋友圈（待定）
+ - [x] 网易云（完成）（[netease.js](https://github.com/hxdnshx/StalkerProject/blob/master/netease.js)）
+ - [x] 念（除图片拉取全部完成）（登录相关参考[nian-Robot](https://github.com/ConnorNowhere/nian-robot)）（[API-nian.so](https://github.com/hxdnshx/StalkerProject/blob/master/API-nian.so)）(直接使用网页抓取,可能会增加浏览计数)
+ - [ ] 微博(可登录)
+ - [ ] QQ（待定）
+ - [ ] 微信朋友圈（待定）
 2. 数据分析	
- + [x] 网易云（进行增量Diff，输出新的数据）
- + [x] 念(进行增量Diff,输出新的数据)
- + [ ] 微博
- + [ ] QQ（待定）
- + [ ] 微信朋友圈（待定）
- + [ ] 腾讯语义分析对接
+ - [x] 网易云（进行增量Diff，输出新的数据）
+ - [x] 念(进行增量Diff,输出新的数据)
+ - [ ] 微博
+ - [ ] QQ（待定）
+ - [ ] 微信朋友圈（待定）
+ - [ ] 腾讯语义分析对接
 3. 数据输出
- + [ ] 邮件(完成!)
- + [ ] RSS(完成!)
- + [ ] 网页报表
+ - [ ] 邮件(完成!)
+ - [ ] RSS(完成!)
+ - [ ] 网页报表
 4. 工程部署
- + [ ] docker
+ - [ ] docker
 5. 系统管理
- + [ ] WinForm界面
- + [ ] 网页界面
- + [ ] 服务稳定性监视
+ - [ ] WinForm界面
+ - [ ] 网页界面
+ - [ ] 服务稳定性监视
 
