@@ -14,7 +14,6 @@ namespace StalkerProject.WeiboObserver
         public WeiboApi()
         {
             helper=new HttpHelper();
-            helper.
         }
 
         public void GetLoginInfo()

@@ -62,7 +62,7 @@ namespace StalkerProject.OutputTerminal
                 Console.WriteLine("No DiffDatabase connected,Service Terminate");
             }
             var col = database.GetCollection<OutputData>();
-            
+            DateTime updateTime=DateTime.Now;
             for (;;)
             {
                 
@@ -71,13 +71,18 @@ namespace StalkerProject.OutputTerminal
                 {
                     var iter = col.Find(Query.All(Query.Descending), limit: 30);
                     List<SyndicationItem> item = new List<SyndicationItem>();
-                    
+                    bool isFirst = true;
                     foreach (var val in iter)
                     {
+                        if (isFirst)
+                        {
+                            isFirst = false;
+                            updateTime = val.OutputTime;
+                        }
                         SyndicationItem sitem = new SyndicationItem()
                         {
                             Title = new TextSyndicationContent(val.Summary),
-                            Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
+                            //Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
                             Content = SyndicationContent.CreatePlaintextContent(val.Content),
                             PublishDate = val.OutputTime,
                             LastUpdatedTime = val.OutputTime,
@@ -87,6 +92,7 @@ namespace StalkerProject.OutputTerminal
                         item.Add(sitem);
                     }
                     feed.Items = item;
+                    feed.LastUpdatedTime = updateTime;
                     Console.WriteLine("RssData Updated");
 
                 }
