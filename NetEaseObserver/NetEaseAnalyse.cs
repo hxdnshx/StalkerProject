@@ -15,7 +15,7 @@ namespace StalkerProject.NetEaseObserver
         private string databaseDir => Alias + ".db";
         private LiteDatabase database;
         private NetEaseData data;
-        private bool firstRun;
+        private bool firstRun = false;
 
 
         public void Start()
@@ -87,7 +87,7 @@ namespace StalkerProject.NetEaseObserver
                     {
                         DiffDetected?.Invoke(
                             "http://music.163.com/#" + modifiedData.RelatedLink,
-                            uName + "删除了歌曲分析：" + modifiedData.SongArtist,
+                            uName + "删除了歌曲分享：" + modifiedData.SongName,
                             string.Format("{0} - {1}\n{2}", modifiedData.SongName, modifiedData.SongArtist,
                                 modifiedData.Comment),
                             "UserInfo." + uid + ".Event");
@@ -95,7 +95,7 @@ namespace StalkerProject.NetEaseObserver
                     {
                         DiffDetected?.Invoke(
                             "http://music.163.com/#" + modifiedData.RelatedLink,
-                            uName + "分享了一首好听的歌曲：" + modifiedData.SongArtist,
+                            uName + "分享了一首好听的歌曲：" + modifiedData.SongName,
                             string.Format("{0} - {1}\n{2}", modifiedData.SongName, modifiedData.SongArtist,
                                 modifiedData.Comment),
                             "UserInfo." + uid + ".Event");
@@ -302,13 +302,15 @@ namespace StalkerProject.NetEaseObserver
                         string sourceValue;
                         currentList.ListItems.TryGetValue(prop.Key, out sourceValue);
                         var targetValue = prop.Value.Value<string>();
-                        if (sourceValue != targetValue)
+                        if (string.IsNullOrWhiteSpace(sourceValue)) sourceValue = "";
+                        if (string.IsNullOrWhiteSpace(targetValue)) targetValue = "";
+                        if (sourceValue.Equals(targetValue))
                         {
                             DiffDetected?.Invoke(
                                 "http://music.163.com/#/user/home?id=" + uid,
                                 uName + "修改了播放列表" + playListName + "的属性" + prop.Key,
                                 uName + "修改了" + prop.Key + ",从" + sourceValue + "变为" + targetValue,
-                                "UserInfo." + id + "." + prop.Key);
+                                "UserInfo." + uid + "." + id + "." + prop.Key);
                             currentList.ListItems[prop.Key] = targetValue;
                         }
                     }
@@ -323,7 +325,7 @@ namespace StalkerProject.NetEaseObserver
                                 "http://music.163.com/#/playlist?id=" + id,
                                 uName + "的播放列表" + playListName + "移除了曲目" + music.Value,
                                 uName + "的播放列表" + playListName + "移除了曲目" + music.Value,
-                                "UserInfo." + id + ".Music");
+                                "UserInfo." + uid + "." + id + ".Music");
                         },
                         music =>
                         {
@@ -331,7 +333,7 @@ namespace StalkerProject.NetEaseObserver
                                 "http://music.163.com/#/playlist?id=" + id,
                                 uName + "的播放列表" + playListName + "增加了曲目" + music.Value,
                                 uName + "的播放列表" + playListName + "增加了曲目" + music.Value,
-                                "UserInfo." + id + ".Music");
+                                "UserInfo." + uid + "." + id + ".Music");
                         }
                         );
                 }
