@@ -69,6 +69,7 @@ namespace StalkerProject.OutputTerminal
                     Text = AllOutput
                 };
                 Console.WriteLine("Start Send Mail");
+                Console.WriteLine(AllOutput);
                 using (var client = new SmtpClient())
                 {
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
@@ -76,8 +77,10 @@ namespace StalkerProject.OutputTerminal
                         client.Connect(MailHost,MailPort,SecureSocketOptions.StartTls);
                     else
                         client.Connect(MailHost,MailPort,MailSSL);
+                    Console.WriteLine("Connected Mail Host:" + MailHost);
                     client.AuthenticationMechanisms.Remove("XOUTH2");
                     client.Authenticate(MailUName,MailPWord);
+                    Console.WriteLine("Auth success,Sending Mail...");
                     client.Send(msg);
                     client.Disconnect(true);
                 }
