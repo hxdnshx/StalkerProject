@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using LiteDB;
+using MailKit.Security;
 
 namespace StalkerProject.OutputTerminal
 {
@@ -27,6 +28,7 @@ namespace StalkerProject.OutputTerminal
         public string MailUName { get; set; }
         public string MailPWord { get; set; }
         public bool MailSSL { get; set; }
+        public bool StartTLS { get; set; }
         public string MailSender { get; set; }
         public string MailTarget { get; set; }
         
@@ -70,7 +72,10 @@ namespace StalkerProject.OutputTerminal
                 using (var client = new SmtpClient())
                 {
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                    client.Connect(MailHost,MailPort,MailSSL);
+                    if(StartTLS)
+                        client.Connect(MailHost,MailPort,SecureSocketOptions.StartTls);
+                    else
+                        client.Connect(MailHost,MailPort,MailSSL);
                     client.AuthenticationMechanisms.Remove("XOUTH2");
                     client.Authenticate(MailUName,MailPWord);
                     client.Send(msg);
