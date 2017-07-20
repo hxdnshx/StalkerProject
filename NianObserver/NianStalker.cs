@@ -17,7 +17,7 @@ namespace StalkerProject.NianObserver
         public string UserName { get; set; }
         public string PassWord { get; set; }
         public string Alias { get; set; }
-        private string session => Alias + ".session";
+        public string Session { get; set; }
         private string database => Alias + ".db";
         private NianApi api;
         private Task updateJob;
@@ -288,6 +288,7 @@ namespace StalkerProject.NianObserver
                 }
         }
 
+        private bool _isDeferedLogin=false;
 
         public void Start()
         {
@@ -302,33 +303,48 @@ namespace StalkerProject.NianObserver
                 col.Insert(data);
             }
             api=new NianApi();
-            bool loginFlag = false;
-            if (File.Exists(session))
+            if (string.IsNullOrWhiteSpace(Session))
             {
-                string[] data = File.ReadAllLines(session);
-                if (api.RestoreLogin(data[0], data[1]))
-                    loginFlag = true;
+                Session = Alias + ".session";
+                Login();
             }
-            if (loginFlag == false && api.Login(UserName,PassWord))//Short Circuit
+            else
             {
-                string uid = "";
-                string shell = "";
-                api.GetLoginToken(out uid, out shell);
-                File.WriteAllText(session, uid + "\r\n" + shell);
+                _isDeferedLogin = true;
             }
-            else if(loginFlag==false)
-            {
-                throw new ArgumentException(Alias + ":无法登录!");
-            }
+
             isCancel=new CancellationTokenSource();
             updateJob=new Task(()=> {Run(isCancel.Token);},isCancel.Token);
             currentPeroid = 0;
             updateJob.Start();
         }
 
+        void Login()
+        {
+            bool loginFlag = false;
+            if (File.Exists(Session))
+            {
+                string[] data = File.ReadAllLines(Session);
+                if (api.RestoreLogin(data[0], data[1]))
+                    loginFlag = true;
+            }
+            if (loginFlag == false && api.Login(UserName, PassWord))//Short Circuit
+            {
+                string uid = "";
+                string shell = "";
+                api.GetLoginToken(out uid, out shell);
+                File.WriteAllText(Session, uid + "\r\n" + shell);
+            }
+            else if (loginFlag == false)
+            {
+                throw new ArgumentException(Alias + ":无法登录!");
+            }
+        }
+
         private void Run(CancellationToken token)
         {
-
+            if(_isDeferedLogin)
+                Login();
             var col = db.GetCollection<NianData>();
             for (;;)
             {
