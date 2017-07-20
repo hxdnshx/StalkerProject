@@ -66,6 +66,7 @@ namespace StalkerProject.OutputTerminal
                 {
                     Text = AllOutput
                 };
+                Console.WriteLine("Start Send Mail");
                 using (var client = new SmtpClient())
                 {
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
