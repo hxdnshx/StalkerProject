@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
+//using System.Net.Mail;
+using MailKit.Net.Smtp;
+using MailKit;
+using MimeKit;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,8 +29,7 @@ namespace StalkerProject.OutputTerminal
         public bool MailSSL { get; set; }
         public string MailSender { get; set; }
         public string MailTarget { get; set; }
-
-        private SmtpClient client;
+        
 
         public void Start()
         {
@@ -36,15 +38,6 @@ namespace StalkerProject.OutputTerminal
             isCancel = new CancellationTokenSource();
             updateJob = new Task(() => { UpdateLoop(isCancel.Token); }, isCancel.Token);
             updateJob.Start();
-            client = new SmtpClient
-            {
-                Port = MailPort,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                EnableSsl = MailSSL,
-                Host = MailHost,
-                Credentials = new System.Net.NetworkCredential(MailUName, MailPWord)
-            };
         }
 
         private void UpdateLoop(CancellationToken token)
@@ -65,16 +58,23 @@ namespace StalkerProject.OutputTerminal
                     AllOutput += string.Format(
                         "\n\n{0}\n{1}\n相关链接:{2}", outputData.Summary, outputData.Content, outputData.RelatedAddress);
                 }
-                MailMessage mail = new MailMessage(MailSender, MailTarget)
+                var msg=new MimeMessage();
+                msg.From.Add(new MailboxAddress("Stalker Project",MailSender));
+                msg.To.Add(new MailboxAddress(MailTarget));
+                msg.Subject = "日常报告 - " + DateTime.Now;
+                msg.Body=new TextPart("plain")
                 {
-                    Subject = "日常报告 - " + DateTime.Now,
-                    Body = AllOutput,
-                    SubjectEncoding = Encoding.UTF8,
-                    BodyEncoding = Encoding.UTF8,
-                    IsBodyHtml = false
+                    Text = AllOutput
                 };
-                client.Timeout=10000;
-                client.Send(mail);
+                using (var client = new SmtpClient())
+                {
+                    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                    client.Connect(MailHost,MailPort,MailSSL);
+                    client.AuthenticationMechanisms.Remove("XOUTH2");
+                    client.Authenticate(MailUName,MailPWord);
+                    client.Send(msg);
+                    client.Disconnect(true);
+                }
                 Console.WriteLine("Mail Sent");
                 File.WriteAllText(checkFile,DateTime.Now.ToString());
                 LastCheckTime = DateTime.Now;
