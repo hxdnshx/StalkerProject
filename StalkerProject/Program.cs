@@ -72,15 +72,27 @@ namespace StalkerProject
             ServiceManager manager = new ServiceManager();
             manager.ReadSetting("serviceSetting.xml");
             //manager.SaveSetting("serviceSetting.xml");
-            foreach (var srv in manager.ActiveServices)
-            {
-                srv.Start();
-            }
+            
             //AddAddress("http://*:8081/", System.Environment.MachineName, System.Environment.UserName);
             using (HttpListener server = new HttpListener())
             {
                 server.Prefixes.Add(@"http://*:8081/");
-                server.Start();
+                try
+                {
+                    server.Start();
+                }
+                catch (Exception e)
+                {
+                    //这里一般产生的是这个端口已经被占用，之类的错误
+                    //可以用这里的异常来检测多实例，防止可能的数据库被损坏
+                    Console.WriteLine(e);
+                    return;
+                }
+                //服务的启动放在后面，防止多个实例碰撞
+                foreach (var srv in manager.ActiveServices)
+                {
+                    srv.Start();
+                }
                 for (;;)
                 {
                     var result = server.GetContext();
