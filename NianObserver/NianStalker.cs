@@ -310,6 +310,8 @@ namespace StalkerProject.NianObserver
             }
             else
             {
+                if (Session.IndexOf(".session", StringComparison.OrdinalIgnoreCase) == -1)
+                    Session += ".session";
                 _isDeferedLogin = true;
             }
 
