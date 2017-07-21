@@ -304,7 +304,9 @@ namespace StalkerProject.NetEaseObserver
                         var targetValue = prop.Value.Value<string>();
                         if (string.IsNullOrWhiteSpace(sourceValue)) sourceValue = "";
                         if (string.IsNullOrWhiteSpace(targetValue)) targetValue = "";
-                        if (sourceValue.Equals(targetValue))
+                        sourceValue = sourceValue.Trim("\n \t".ToCharArray());
+                        targetValue = targetValue.Trim("\n \t".ToCharArray());
+                        if (!sourceValue.Equals(targetValue))
                         {
                             DiffDetected?.Invoke(
                                 "http://music.163.com/#/user/home?id=" + uid,
