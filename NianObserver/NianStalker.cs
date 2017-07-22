@@ -76,7 +76,7 @@ namespace StalkerProject.NianObserver
                                 "http://nian.so/#!/dream/" + id,
                                 uName + "修改了梦想" + title + "的信息",
                                 "属性" + values.Key + "从" + valItem + "变为" + targetValue,
-                                "DreamList." + id + "." + values.Key);
+                                "Nian." + TargetUID + ".Dream." + id + ".Info." + values.Key);
                             dream.Status[values.Key] = targetValue;
                         }
                     }
@@ -127,7 +127,7 @@ namespace StalkerProject.NianObserver
                                 "http://nian.so/m/step/" + currentId,
                                 uName + "在记本" + title + "发布了一条足迹",
                                 "足迹内容:" + si.Status["content"],
-                                "DreamList." + id + "." + currentId);
+                                "Nian." + TargetUID + ".Dream." + id + ".Step." + currentId);
                             unresolvedComment = ((JObject) stepInfo)["comments"].Value<int>();
                             unresolvedDiff--;
                     }
@@ -146,7 +146,7 @@ namespace StalkerProject.NianObserver
                                     "http://nian.so/m/dream/" + dream.Status["id"],
                                     uName + "删除了一条在" + title + "的足迹",
                                     "足迹内容:" + dream.Steps[j].Status["content"],
-                                    "DreamList." + id + "." + dream.Steps[j].Status["sid"]);
+                                    "Nian." + TargetUID + ".Dream." + id + ".Step." + dream.Steps[j].Status["sid"]);
                             }
                         }
                         pos = index - 1;
@@ -208,8 +208,8 @@ namespace StalkerProject.NianObserver
                         DiffDetected?.Invoke(
                                     "http://nian.so/m/step/" + step.Status["sid"],
                                     uName + "的足迹下出现了一条新评论!",
-                                    "足迹:" + step.Status["content"] + " 评论:" + cmt.Status["content"],
-                                    "Step." + sid);
+                                    "足迹:" + step.Status["content"] + " 评论:" + cmt.Status["content"] + " - By " + cmt.Status["user"],
+                                    "Nian." + TargetUID + ".Dream." + step.Status["dream"] + ".Step." + sid + ".Comments");
                         unresolvedComments--;
                     }
                     else
@@ -226,8 +226,8 @@ namespace StalkerProject.NianObserver
                                 DiffDetected?.Invoke(
                                     "http://nian.so/m/step/" + step.Status["sid"],
                                     uName + "的足迹下有一条评论被删除了!",
-                                    "足迹:" + step.Status["content"] + " 评论:" + step.Comments[j].Status["content"],
-                                    "Step." + sid);
+                                    "足迹:" + step.Status["content"] + " 评论:" + step.Comments[j].Status["content"] + " - By " + step.Comments[j].Status["user"],
+                                    "Nian." + TargetUID + ".Dream." + step.Status["dream"] + ".Step." + sid + ".Comments");
                             }
                         }
                         pos = index - 1;
@@ -271,7 +271,7 @@ namespace StalkerProject.NianObserver
                             "http://nian.so/#!/dream/" + id,
                             uName + "新增了梦想" + title,
                             uName + "新增了梦想" + title,
-                            "DreamList.ID");
+                            "Nian." + targetUser + ".Dream." + id + ".Info");
                         di.Status=new Dictionary<string, string>();
                         di.Steps = new List<StepInfo>();
                     }
@@ -372,7 +372,7 @@ namespace StalkerProject.NianObserver
                                     "http://nian.so/#!/user/" + TargetUID,
                                     uName + "修改了" + obj.Key,
                                     uName + "修改了" + obj.Key + ",从" + sourceValue + "变为" + targetValue,
-                                    "UserInfo." + obj.Key);
+                                    "Nian." + TargetUID +".UserInfo." + obj.Key);
                             }
                         }
                     }
