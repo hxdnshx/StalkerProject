@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using LiteDB;
 using Newtonsoft.Json.Linq;
 
@@ -423,5 +426,132 @@ namespace StalkerProject.NianObserver
 
         [STKDescription("当有数据更新之后")]
         public Action<string, string, string, string> DiffDetected { get; set; }
+
+
+        private void FailReturn(HttpListenerContext context, string reason)
+        {
+            JObject obj = new JObject();
+            obj.Add("status", 401);
+            obj.Add("error", 0);
+            JObject data = new JObject();
+            obj.Add("data", data);
+            data.Add("description",reason);
+            using (StreamWriter writer = new StreamWriter(context.Response.OutputStream))
+            {
+                writer.Write(obj.ToString());
+                writer.Close();
+                context.Response.Close();
+            }
+        }
+        /// <summary>
+        /// 
+        /// /[DreamID]
+        /// /[DreamID]/[StepID]
+        /// /[DreamID]/[StepID]/[CommentID]
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="subUrl"></param>
+        [STKDescription("输出Step信息")]
+        public void DisplayStepInfo(HttpListenerContext context, string subUrl)
+        {
+            string inUrl= context.Request.RawUrl.Replace(subUrl, "");
+            string[] splited = inUrl.Split('?')[0].Split('/');
+            bool isSuccess = false;
+            int id = -1;
+            if (splited.Length == 0 || splited.Length==1)
+            {
+                ResponseUserInfo(context);
+                return;
+            }
+            DreamInfo dream = data.Dreams.FirstOrDefault(d => d.Status["id"] == splited[1]);
+            if (dream == null)
+            {
+                FailReturn(context,"Dream" + splited[1] + "Not Found");
+                return;
+            }
+            else
+            {
+                if (splited.Length == 2)
+                {
+                    ResponseDreamInfo(context, dream);
+                    return;
+                }
+            }
+            StepInfo step = dream.Steps.FirstOrDefault(d => d.Status["sid"] == splited[2]);
+            if (step == null)
+            {
+                FailReturn(context, "Step" + splited[2] + "Not Found");
+                return;
+            }
+            else
+            {
+                if (splited.Length == 3)
+                {
+                    ResponseStepInfo(context, step);
+                    return;
+                }
+            }
+            FailReturn(context,"???");
+        }
+
+        private static void ResponseStepInfo(HttpListenerContext context, StepInfo step)
+        {
+            JObject obj = new JObject();
+            obj.Add("status", 200);
+            obj.Add("error", 0);
+            JObject inner = new JObject();
+            obj.Add("data", inner);
+            foreach (var stat in step.Status)
+            {
+                inner.Add(stat.Key, stat.Value);
+            }
+            JArray comments = new JArray();
+            inner.Add("comment", comments);
+            foreach (var dreamStep in step.Comments)
+            {
+                comments.Add(dreamStep.Status["sid"]);
+            }
+            context.ResponseString(obj.ToString());
+        }
+
+        private static void ResponseDreamInfo(HttpListenerContext context, DreamInfo dream)
+        {
+            JObject obj = new JObject();
+            obj.Add("status", 200);
+            obj.Add("error", 0);
+            JObject inner = new JObject();
+            obj.Add("data", inner);
+            foreach (var stat in dream.Status)
+            {
+                inner.Add(stat.Key, stat.Value);
+            }
+            JArray steps = new JArray();
+            inner.Add("steps", steps);
+            foreach (var dreamStep in dream.Steps)
+            {
+                steps.Add(dreamStep.Status["sid"]);
+            }
+            context.ResponseString(obj.ToString());
+        }
+
+        private void ResponseUserInfo(HttpListenerContext context)
+        {
+            JObject obj = new JObject();
+            obj.Add("status", 200);
+            obj.Add("error", 0);
+            JObject inner = new JObject();
+            obj.Add("data", inner);
+            foreach (var dataListItem in data.ListItems)
+            {
+                inner.Add(dataListItem.Key, dataListItem.Value);
+            }
+            JArray dreams = new JArray();
+            inner.Add("dreams", dreams);
+            foreach (var dataDream in data.Dreams)
+            {
+                dreams.Add(dataDream.Status["id"]);
+            }
+            context.ResponseString(obj.ToString());
+        }
     }
 }
