@@ -53,7 +53,7 @@ namespace StalkerProject.OutputTerminal
             var col = database.GetCollection<OutputData>();
             for (;;)
             {
-                var list=col.Find(Query.GT("OutputTime", LastCheckTime));
+                var list=col.Find(Query.GT("OutputTime", LastCheckTime)).OrderByDescending(x=>x.OutputTime);
                 string AllOutput = "以下是新更新的内容：";
                 foreach (var outputData in list)
                 {
@@ -79,6 +79,7 @@ namespace StalkerProject.OutputTerminal
                         client.Connect(MailHost,MailPort,MailSSL);
                     Console.WriteLine("Connected Mail Host:" + MailHost);
                     client.AuthenticationMechanisms.Remove("XOUTH2");
+                    Console.WriteLine("Auth:" + MailUName);
                     client.Authenticate(MailUName,MailPWord);
                     Console.WriteLine("Auth success,Sending Mail...");
                     client.Send(msg);
