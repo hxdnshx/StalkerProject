@@ -37,14 +37,14 @@ namespace StalkerProject
                 if (OnRequest == null) return false;
                 if (OnRequest.GetInvocationList().Length > 1)
                     throw new ArgumentException("OnDataFetched不能接受多个连接");
-                OnRequest(request);
+                OnRequest(request,SubUrl);
                 return true;
             }
             return false;
         }
 
         [STKDescription("收到网页请求时")]
-        public Action<HttpListenerContext> OnRequest { get; set; }
+        public Action<HttpListenerContext,string> OnRequest { get; set; }
     }
     class Program
     {

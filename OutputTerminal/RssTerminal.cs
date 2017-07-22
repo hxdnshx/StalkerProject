@@ -144,7 +144,7 @@ namespace StalkerProject.OutputTerminal
         }
 
         [STKDescription("输出RSS信息")]
-        public void DisplayRss(HttpListenerContext context)
+        public void DisplayRss(HttpListenerContext context,string subUrl)
         {
             feed.Links.Clear();
             feed.Links.Add(SyndicationLink.CreateSelfLink(context.Request.Url));//.BaseUri = context.Request.Url;
