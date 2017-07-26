@@ -436,12 +436,7 @@ namespace StalkerProject.NianObserver
             JObject data = new JObject();
             obj.Add("data", data);
             data.Add("description",reason);
-            using (StreamWriter writer = new StreamWriter(context.Response.OutputStream))
-            {
-                writer.Write(obj.ToString());
-                writer.Close();
-                context.Response.Close();
-            }
+            context.ResponseString(obj.ToString());
         }
         /// <summary>
         /// 
@@ -491,7 +486,36 @@ namespace StalkerProject.NianObserver
                     return;
                 }
             }
+            CommentInfo cmt = step.Comments.FirstOrDefault(d => d.Status["id"] == splited[3]);
+            if (cmt == null)
+            {
+                FailReturn(context, "Comment" + splited[3] + "Not Found");
+                return;
+            }
+            else
+            {
+                if (splited.Length == 4)
+                {
+                    ResponseCommentInfo(context, cmt);
+                    return;
+                }
+            }
             FailReturn(context,"???");
+        }
+
+        private static void ResponseCommentInfo(HttpListenerContext context, CommentInfo cmt)
+        {
+            JObject obj = new JObject();
+            obj.Add("status", 200);
+            obj.Add("error", 0);
+            JObject inner = new JObject();
+            obj.Add("data", inner);
+            foreach (var stat in cmt.Status)
+            {
+                inner.Add(stat.Key, stat.Value);
+            }
+            obj.Add("isRemoved", cmt.IsRemoved);
+            context.ResponseString(obj.ToString());
         }
 
         private static void ResponseStepInfo(HttpListenerContext context, StepInfo step)
@@ -507,9 +531,19 @@ namespace StalkerProject.NianObserver
             }
             JArray comments = new JArray();
             inner.Add("comment", comments);
-            foreach (var dreamStep in step.Comments)
+            inner.Add("isRemoved",step.IsRemoved);
+            foreach (var stepComment in step.Comments)
             {
-                comments.Add(dreamStep.Status["sid"]);
+                JObject stepContent=new JObject();
+                stepContent.Add("id",stepComment.Status["id"]);
+                stepContent.Add("content",stepComment.Status["content"]);
+                comments.Add(stepContent);
+            }
+            JArray images = new JArray();
+            inner.Add("images",images);
+            foreach (var stepImage in step.Images)
+            {
+                images.Add(stepImage);
             }
             context.ResponseString(obj.ToString());
         }
@@ -529,7 +563,10 @@ namespace StalkerProject.NianObserver
             inner.Add("steps", steps);
             foreach (var dreamStep in dream.Steps)
             {
-                steps.Add(dreamStep.Status["sid"]);
+                JObject stepContent = new JObject();
+                stepContent.Add("id", dreamStep.Status["sid"]);
+                stepContent.Add("content", dreamStep.Status["content"]);
+                steps.Add(stepContent);
             }
             context.ResponseString(obj.ToString());
         }
@@ -549,7 +586,10 @@ namespace StalkerProject.NianObserver
             inner.Add("dreams", dreams);
             foreach (var dataDream in data.Dreams)
             {
-                dreams.Add(dataDream.Status["id"]);
+                JObject dreamContent = new JObject();
+                dreamContent.Add("id",dataDream.Status["id"]);
+                dreamContent.Add("title",dataDream.Status["title"]);
+                dreams.Add(dreamContent);
             }
             context.ResponseString(obj.ToString());
         }
