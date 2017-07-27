@@ -1,3 +1,6 @@
 [submodule "STKCore/HttpHelper"]
 	path = STKCore/HttpHelper
 	url = https://github.com/hxdnshx/HttpHelper.git
+[submodule "YourDiaryAPI"]
+	path = YourDiaryAPI
+	url = https://github.com/hxdnshx/YourDiaryAPI.git
