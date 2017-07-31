@@ -45,7 +45,8 @@ namespace StalkerProject.NianObserver
             
             bool isFoundHead = false;//是否找到最近出现的元素
             List<StepInfo> pendingInsert=new List<StepInfo>();
-            for (int page = 1; page <= maxPage; page++)
+            int page;
+            for (page = 1; page <= maxPage; page++)
             {
                 if (dream.Status.ContainsKey("private"))
                 {
@@ -167,8 +168,25 @@ namespace StalkerProject.NianObserver
                     }
                 }
             }
-            if(unresolvedDiff!=0)
-                Console.WriteLine("Still Have UnresolvedDiff!!!!");
+            page -= 1;//for跳出的那一轮需要减去
+            if ((page == maxPage || maxPage == 0) && pos >= 0)//最后一页时如果pos不等于0，说明有step被删除了
+            {
+                for (int j = pos; j >= 0; j--)
+                {
+                    if (!dream.Steps[j].IsRemoved)
+                    {
+                        dream.Steps[j].IsRemoved = true;
+                        unresolvedDiff++;
+                        DiffDetected?.Invoke(
+                            "http://nian.so/m/dream/" + dream.Status["id"],
+                            uName + "删除了一条在" + dream.Status["title"] + "的足迹",
+                            "足迹内容:" + dream.Steps[j].Status["content"],
+                            "Nian." + TargetUID + ".Dream." + dream.Status["id"] + ".Step." + dream.Steps[j].Status["sid"]);
+                    }
+                }
+            }
+            if (unresolvedDiff!=0)
+                Console.WriteLine("Still Have UnresolvedDiff!!!!" + " Offset:" + unresolvedDiff);
             for (int j = pendingInsert.Count - 1; j >= 0; j--)
             {
                 dream.Steps.Add(pendingInsert[j]);
@@ -287,7 +305,7 @@ namespace StalkerProject.NianObserver
             }
                 foreach (var dataDream in data.Dreams)
                 {
-                    GetDreamExtendInfo(dataDream, data);
+                    GetDreamExtendInfo(dataDream, data,currentPeroid % privatePeroid != 0);
                 }
         }
 
