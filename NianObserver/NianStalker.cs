@@ -523,25 +523,21 @@ namespace StalkerProject.NianObserver
 
         private static void ResponseCommentInfo(HttpListenerContext context, CommentInfo cmt)
         {
-            JObject obj = new JObject();
-            obj.Add("status", 200);
-            obj.Add("error", 0);
-            JObject inner = new JObject();
+            var obj = new JObject {{"status", 200}, {"error", 0}};
+            var inner = new JObject();
             obj.Add("data", inner);
             foreach (var stat in cmt.Status)
             {
                 inner.Add(stat.Key, stat.Value);
             }
-            obj.Add("isRemoved", cmt.IsRemoved);
+            obj.Add("isremoved", cmt.IsRemoved);
             context.ResponseString(obj.ToString());
         }
 
         private static void ResponseStepInfo(HttpListenerContext context, StepInfo step)
         {
-            JObject obj = new JObject();
-            obj.Add("status", 200);
-            obj.Add("error", 0);
-            JObject inner = new JObject();
+            var obj = new JObject {{"status", 200}, {"error", 0}};
+            var inner = new JObject();
             obj.Add("data", inner);
             foreach (var stat in step.Status)
             {
@@ -549,12 +545,16 @@ namespace StalkerProject.NianObserver
             }
             JArray comments = new JArray();
             inner.Add("comment", comments);
-            inner.Add("isRemoved",step.IsRemoved);
+            inner.Add("isremoved",step.IsRemoved);
             foreach (var stepComment in step.Comments)
             {
-                JObject stepContent=new JObject();
-                stepContent.Add("id",stepComment.Status["id"]);
-                stepContent.Add("content",stepComment.Status["content"]);
+                JObject stepContent = new JObject
+                {
+                    {"id", stepComment.Status["id"]},
+                    {"content", stepComment.Status["content"]},
+                    {"isRemoved", stepComment.IsRemoved},
+                    {"user", stepComment.Status["user"]}
+                };
                 comments.Add(stepContent);
             }
             JArray images = new JArray();
@@ -568,10 +568,8 @@ namespace StalkerProject.NianObserver
 
         private static void ResponseDreamInfo(HttpListenerContext context, DreamInfo dream)
         {
-            JObject obj = new JObject();
-            obj.Add("status", 200);
-            obj.Add("error", 0);
-            JObject inner = new JObject();
+            var obj = new JObject {{"status", 200}, {"error", 0}};
+            var inner = new JObject();
             obj.Add("data", inner);
             foreach (var stat in dream.Status)
             {
@@ -581,9 +579,12 @@ namespace StalkerProject.NianObserver
             inner.Add("steps", steps);
             foreach (var dreamStep in dream.Steps)
             {
-                JObject stepContent = new JObject();
-                stepContent.Add("id", dreamStep.Status["sid"]);
-                stepContent.Add("content", dreamStep.Status["content"]);
+                JObject stepContent = new JObject
+                {
+                    {"id", dreamStep.Status["sid"]},
+                    {"content", dreamStep.Status["content"]},
+                    {"isremoved", dreamStep.IsRemoved}
+                };
                 steps.Add(stepContent);
             }
             context.ResponseString(obj.ToString());
@@ -591,10 +592,8 @@ namespace StalkerProject.NianObserver
 
         private void ResponseUserInfo(HttpListenerContext context)
         {
-            JObject obj = new JObject();
-            obj.Add("status", 200);
-            obj.Add("error", 0);
-            JObject inner = new JObject();
+            var obj = new JObject {{"status", 200}, {"error", 0}};
+            var inner = new JObject();
             obj.Add("data", inner);
             foreach (var dataListItem in data.ListItems)
             {
@@ -604,9 +603,12 @@ namespace StalkerProject.NianObserver
             inner.Add("dreams", dreams);
             foreach (var dataDream in data.Dreams)
             {
-                JObject dreamContent = new JObject();
-                dreamContent.Add("id",dataDream.Status["id"]);
-                dreamContent.Add("title",dataDream.Status["title"]);
+                JObject dreamContent = new JObject
+                {
+                    {"id", dataDream.Status["id"]},
+                    {"title", dataDream.Status["title"]},
+                    {"private", dataDream.Status["private"]}
+                };
                 dreams.Add(dreamContent);
             }
             context.ResponseString(obj.ToString());

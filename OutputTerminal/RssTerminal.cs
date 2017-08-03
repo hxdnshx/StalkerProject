@@ -69,7 +69,7 @@ namespace StalkerProject.OutputTerminal
                 //Rebuild RssData
                 try
                 {
-                    var iter = col.Find(Query.All(Query.Descending), limit: 30);
+                    var iter = col.Find(Query.All(Query.Descending), limit: 60);
                     List<SyndicationItem> item = new List<SyndicationItem>();
                     bool isFirst = true;
                     foreach (var val in iter)
