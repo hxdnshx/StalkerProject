@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace StalkerProject
@@ -47,11 +48,19 @@ namespace StalkerProject
                     reldir = context.Request.RawUrl;
                 string dir = CombineDir(WebDir, reldir);
                 if (!File.Exists(dir)) return false;
-                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-                var content = File.ReadAllBytes(dir);
-                context.Response.OutputStream.Write(content,0,content.Length);
-                context.Response.OutputStream.Close();
-                context.Response.Close();
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                //Async Response
+                Task t = Task.Run(() => {
+                    
+                    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                    var content = File.ReadAllBytes(dir);
+                    context.Response.OutputStream.Write(content, 0, content.Length);
+                    context.Response.OutputStream.Close();
+                    context.Response.Close();
+                    sw.Stop();
+                    Console.WriteLine("Request:" + dir + "Handled in " + sw.ElapsedMilliseconds + "ms");
+                });
                 return true;
             }
             return false;

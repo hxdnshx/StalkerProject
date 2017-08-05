@@ -40,6 +40,7 @@ namespace StalkerProject
             //AddAddress("https://*:8082/", System.Environment.MachineName, System.Environment.UserName);
             using (HttpListener server = new HttpListener())
             {
+                server.IgnoreWriteExceptions = true;
                 server.Prefixes.Add(@"http://*:8081/");
                 try
                 {
