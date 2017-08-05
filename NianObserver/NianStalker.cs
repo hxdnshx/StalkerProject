@@ -264,6 +264,10 @@ namespace StalkerProject.NianObserver
                 else
                     isAllResolved = false;
             }
+            for (int j = pendingInsert.Count - 1; j >= 0; j--)
+            {
+                step.Comments.Add(pendingInsert[j]);
+            }
         }
 
         private void GetDreamList(int targetUser, NianData data)
