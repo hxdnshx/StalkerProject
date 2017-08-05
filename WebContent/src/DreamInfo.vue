@@ -6,7 +6,7 @@
           <div>
             <el-row>
               <el-col :span="10">
-                <img :src="avater" class="avater"/>
+                <!--<img :src="avater" class="avater"/>-->
               </el-col>
               <el-col :span="14">
                 <el-form label-position="right">
@@ -61,6 +61,7 @@
 <script>
   import axios from 'axios';
   import CommentInfo from './CommentInfo';
+  import consts from './GlobalConst.vue';
   export default {
     name: 'DreamInfo',
     props: ['dreamid'],
@@ -76,10 +77,10 @@
     },
     created: function () {
       var _context = this;
-      axios.get('http://localhost:8081/Nian/' + this.dreamid)
+      axios.get(consts.serverpath + '/' + this.dreamid)
         .then(function (response) {
           var resp = response.data.data;
-          console.log(resp);
+          // console.log(resp);
           _context.steps = resp.steps;
           _context.avater = 'http://img.nian.so/dream/' + resp.image;
           _context.title = resp.title;

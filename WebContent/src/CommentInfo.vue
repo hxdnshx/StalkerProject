@@ -26,6 +26,7 @@
 
 <script>
   import axios from 'axios';
+  import consts from './GlobalConst.vue';
   export default {
     name: 'CommentInfo',
     props: ['dreamid', 'stepid'],
@@ -36,10 +37,10 @@
     },
     created: function () {
       var _context = this;
-      axios.get('http://localhost:8081/Nian/' + this.dreamid + '/' + this.stepid)
+      axios.get(consts.serverpath + '/' + this.dreamid + '/' + this.stepid)
         .then(function (response) {
           var resp = response.data.data;
-          console.log(resp);
+          // console.log(resp);
           _context.comments = resp.comment;
         });
     },

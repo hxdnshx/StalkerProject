@@ -41,7 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataHelper.cs" />
+    <Compile Include="DomainProxy.cs" />
     <Compile Include="FileHelper.cs" />
+    <Compile Include="FileServer.cs" />
     <Compile Include="HttpHelper\HttpHelper.cs" />
     <Compile Include="ISTKService.cs" />
     <Compile Include="NetworkHelper.cs" />

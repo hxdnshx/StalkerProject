@@ -9,43 +9,7 @@ using System.Net;
      */
 namespace StalkerProject
 {
-    public class DomainProxy : ISTKService
-    {
-        public string Alias { get; set; }
-        public string SubUrl { get; set; }
-        public void Start()
-        {
-            
-        }
 
-        public void Stop()
-        {
-            
-        }
-
-        public void LoadDefaultSetting()
-        {
-            Alias = "DomainProxy" + new Random().Next(1, 10000);
-            SubUrl = "";
-        }
-
-        public bool OnHttpRequest(HttpListenerContext request)
-        {
-            if (string.IsNullOrWhiteSpace(SubUrl)) return false;
-            if (request.Request.RawUrl.IndexOf(SubUrl) == 0) //In The Beginning
-            {
-                if (OnRequest == null) return false;
-                if (OnRequest.GetInvocationList().Length > 1)
-                    throw new ArgumentException("OnDataFetched不能接受多个连接");
-                OnRequest(request,SubUrl);
-                return true;
-            }
-            return false;
-        }
-
-        [STKDescription("收到网页请求时")]
-        public Action<HttpListenerContext,string> OnRequest { get; set; }
-    }
     class Program
     {
         public static void AddAddress(string address, string domain, string user)
@@ -73,7 +37,7 @@ namespace StalkerProject
             manager.ReadSetting("serviceSetting.xml");
             //manager.SaveSetting("serviceSetting.xml");
             
-            //AddAddress("http://*:8081/", System.Environment.MachineName, System.Environment.UserName);
+            //AddAddress("https://*:8082/", System.Environment.MachineName, System.Environment.UserName);
             using (HttpListener server = new HttpListener())
             {
                 server.Prefixes.Add(@"http://*:8081/");

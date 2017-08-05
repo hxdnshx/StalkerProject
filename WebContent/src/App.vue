@@ -4,7 +4,7 @@
     <template v-if="dataloaded">
       <el-row>
         <el-col :span="10">
-          <img :src="avater" class="avater"/>
+          <!--<img :src="avater" class="avater"/>-->
         </el-col>
         <el-col :span="14">
           <el-form inline>
@@ -48,6 +48,7 @@
 <script>
   import axios from 'axios';
   import DreamInfo from './DreamInfo';
+  import consts from './GlobalConst.vue';
 export default {
     name: 'app',
     data () {
@@ -64,11 +65,11 @@ export default {
     methods: {
       loaddata: function (event) {
         var _context = this;
-        axios.get('http://localhost:8081/Nian')
+        axios.get(consts.serverpath)
           .then(function (response) {
             var resp = response.data.data;
-            console.log(resp.dreams);
-            console.log(_context);
+            // console.log(resp.dreams);
+            // console.log(_context);
             _context.dreams = resp.dreams;
             _context.name = resp.name;
             _context.uid = resp.uid;
