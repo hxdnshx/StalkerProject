@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using LiteDB;
 using Newtonsoft.Json.Linq;
 using DiffPlex;
@@ -186,36 +187,44 @@ namespace StalkerProject.NetEaseObserver
                             break;
                     }
                 }
+                StringBuilder changes=new StringBuilder("");
                 foreach (var changedSong in changedSongs)
                 {
                     if ((changedSong.Value & 3) == 1)
                     {
-                        //Insert Only
-                        DiffDetected?.Invoke(
-                            "http://music.163.com/#/user/home?id=" + uid,
-                            uName + "的歌曲周榜新增了曲目" + changedSong.Key,
-                            "曲目排名为:" + ((changedSong.Value & 0xFF000) >> 12).ToString(),
-                            "UserInfo." + uid + ".WeekRanking");
+                        //Add
+                        changes.AppendLine(string.Format(
+                            "{0} 排名: {1} -> {2}",
+                            changedSong.Key,
+                            "新入榜",
+                            ((changedSong.Value & 0xFF000) >> 12).ToString()));
                     }
                     else if ((changedSong.Value & 3) == 2)
                     {
                         //Remove Only
-                        DiffDetected?.Invoke(
-                            "http://music.163.com/#/user/home?id=" + uid,
-                            uName + "的歌曲周榜移除了曲目" + changedSong.Key,
-                            "曲目排名为:" + ((changedSong.Value & 0xFF0) >> 4).ToString(),
-                            "UserInfo." + uid + ".WeekRanking");
+                        changes.AppendLine(string.Format(
+                            "{0} 排名: {1} -> {2}",
+                            changedSong.Key,
+                            ((changedSong.Value & 0xFF0) >> 4).ToString(),
+                            "排名外"));
                     }
                     else
                     {
                         //Insert And Remove/
-                        DiffDetected?.Invoke(
-                            "http://music.163.com/#/user/home?id=" + uid,
-                            uName + "的歌曲周榜的曲目" + changedSong.Key + "排名发生了变化",
-                            "原曲目排名为:" + ((changedSong.Value & 0xFF0) >> 4).ToString() + "变为:"
-                            + ((changedSong.Value & 0xFF000) >> 12).ToString(),
-                            "UserInfo." + uid + ".WeekRanking");
+                        changes.AppendLine(string.Format(
+                            "{0} 排名: {1} -> {2}",
+                            changedSong.Key,
+                            ((changedSong.Value & 0xFF0) >> 4).ToString(),
+                            ((changedSong.Value & 0xFF000) >> 12).ToString()));
                     }
+                }
+                if (changedSongs.Count > 0)
+                {
+                    DiffDetected?.Invoke(
+                        "http://music.163.com/#/user/home?id=" + uid,
+                        uName + "的歌曲周榜产生了变化",
+                        changes.ToString(),
+                        "UserInfo." + uid + ".WeekRanking");
                 }
                 data.WeeklyFreq = srcStr;
             }
@@ -247,36 +256,44 @@ namespace StalkerProject.NetEaseObserver
                             break;
                     }
                 }
+                StringBuilder changes = new StringBuilder("");
                 foreach (var changedSong in changedSongs)
                 {
                     if ((changedSong.Value & 3) == 1)
                     {
-                        //Insert Only
-                        DiffDetected?.Invoke(
-                            "http://music.163.com/#/user/home?id=" + uid,
-                            uName + "的歌曲榜新增了曲目" + changedSong.Key,
-                            "曲目排名为:" + ((changedSong.Value & 0xFF000) >> 12).ToString(),
-                            "UserInfo." + uid + ".AllRanking");
+                        //Add
+                        changes.AppendLine(string.Format(
+                            "{0} 排名: {1} -> {2}",
+                            changedSong.Key,
+                            "新入榜",
+                            ((changedSong.Value & 0xFF000) >> 12).ToString()));
                     }
                     else if ((changedSong.Value & 3) == 2)
                     {
                         //Remove Only
-                        DiffDetected?.Invoke(
-                            "http://music.163.com/#/user/home?id=" + uid,
-                            uName + "的歌曲榜移除了曲目" + changedSong.Key,
-                            "曲目排名为:" + ((changedSong.Value & 0xFF0) >> 4).ToString(),
-                            "UserInfo." + uid + ".AllRanking");
+                        changes.AppendLine(string.Format(
+                            "{0} 排名: {1} -> {2}",
+                            changedSong.Key,
+                            ((changedSong.Value & 0xFF0) >> 4).ToString(),
+                            "排名外"));
                     }
                     else
                     {
                         //Insert And Remove/
-                        DiffDetected?.Invoke(
-                            "http://music.163.com/#/user/home?id=" + uid,
-                            uName + "的歌曲榜的曲目" + changedSong.Value + "排名发生了变化",
-                            "原曲目排名为:" + ((changedSong.Value & 0xFF0) >> 4).ToString() + "变为:"
-                            + ((changedSong.Value & 0xFF000) >> 12).ToString(),
-                            "UserInfo." + uid + ".AllRanking");
+                        changes.AppendLine(string.Format(
+                            "{0} 排名: {1} -> {2}",
+                            changedSong.Key,
+                            ((changedSong.Value & 0xFF0) >> 4).ToString(),
+                            ((changedSong.Value & 0xFF000) >> 12).ToString()));
                     }
+                }
+                if (changedSongs.Count > 0)
+                {
+                    DiffDetected?.Invoke(
+                        "http://music.163.com/#/user/home?id=" + uid,
+                        uName + "的歌曲榜产生了变化",
+                        changes.ToString(),
+                        "UserInfo." + uid + ".WeekRanking");
                 }
                 data.AllFreq = srcStr;
             }
