@@ -35,7 +35,7 @@ namespace StalkerProject
                 {
                     if (type.FullName.Contains("System.Action") && type.IsGenericTypeDefinition)
                     {
-                        Console.WriteLine(type.ToString());
+                        //Console.WriteLine(type.ToString());
                         _actionTypes[type.GetGenericArguments().Length] = type;
                     }
                 }
