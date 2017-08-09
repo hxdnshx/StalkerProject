@@ -556,7 +556,7 @@ namespace StalkerProject.NianObserver
                 {
                     {"id", stepComment.Status["id"]},
                     {"content", stepComment.Status["content"]},
-                    {"isRemoved", stepComment.IsRemoved},
+                    {"isremoved", stepComment.IsRemoved},
                     {"user", stepComment.Status["user"]}
                 };
                 comments.Add(stepContent);

@@ -1,7 +1,7 @@
 <template>
   <div>
     <transition name="fade">
-        <el-table :data="steps">
+        <el-table :data="comments">
           <el-table-column
             label="评论"
             prop="content"
@@ -10,8 +10,7 @@
           <el-table-column
             label="作者"
             prop="user"
-            align="left"
-            :formatter="contextformatter">
+            align="left">
           </el-table-column>
           <el-table-column
             label="状态"
