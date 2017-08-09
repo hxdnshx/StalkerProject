@@ -100,6 +100,9 @@
         return 'しらない';
       },
       contextformatter: function (row, col, value) {
+        if (value === null || value === undefined) {
+          return value;
+        }
         console.log(value);
         if (value.length > 50) {
           return value.slice(0, 47) + '...';
