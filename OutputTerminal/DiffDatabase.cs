@@ -41,7 +41,7 @@ namespace StalkerProject.OutputTerminal
         [STKDescription("录入新的数据")]
         public void InputData(string RelatedAddress, string Summary, string Content, string RelatedVar)
         {
-            //var trans = database.BeginTrans();
+            var trans = database.BeginTrans();
             var col = database.GetCollection<OutputData>();
             col.Insert(new OutputData()
             {
@@ -51,8 +51,7 @@ namespace StalkerProject.OutputTerminal
                 RelatedVar = RelatedVar,
                 OutputTime = DateTime.Now
             });
-            
-            //trans.Commit();
+            trans.Commit();
         }
     }
 }

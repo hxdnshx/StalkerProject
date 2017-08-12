@@ -60,6 +60,7 @@ namespace StalkerProject.NetEaseObserver
             {
                 DiffDetected = null;
             }
+            var trans = database.BeginTrans();
             var col = database.GetCollection<NetEaseData>();
             var uName = newData["status"]["name"].Value<string>();
             var uid = newData["status"]["uid"].Value<string>();
@@ -358,6 +359,7 @@ namespace StalkerProject.NetEaseObserver
                 }
             }
             col.Update(data);
+            trans.Commit();
             if (firstRun)
             {
                 DiffDetected = tmpData;

@@ -375,6 +375,7 @@ namespace StalkerProject.NianObserver
             var col = db.GetCollection<NianData>();
             for (;;)
             {
+                var trans = db.BeginTrans();
                 try
                 {
                     currentTime = DateTime.Now;
@@ -416,6 +417,7 @@ namespace StalkerProject.NianObserver
                                          + e.InnerException.ToString();
                     File.AppendAllText("ErrorDump.txt", outputstr + anotherPart);
                 }
+                trans.Commit();
                 token.WaitHandle.WaitOne(Math.Max(60000, Interval));
                 token.ThrowIfCancellationRequested();
             }
