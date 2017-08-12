@@ -22,7 +22,7 @@ var specialSelect=function(liId,subSelector,attr){
 	//这里作为纯ID的元素的选取手段
 
 
-casper.echo('connect:' + 'http://music.163.com/#/search/m/?s=' + userName + '&type=1002');
+//casper.echo('connect:' + 'http://music.163.com/#/search/m/?s=' + userName + '&type=1002');
 casper.start('http://music.163.com/#/search/m/?s=' + userName + '&type=1002',{
 	header : defaultheader
 });
@@ -35,8 +35,8 @@ casper.then(function(){casper.switchToFrame("contentFrame");});
 casper.waitForSelector('a[class="txt f-fs1"]');
 casper.then(function(){
 	
-	casper.echo('PageLoaded');
-	this.echo("Redirect to User Page....");
+	//casper.echo('PageLoaded');
+	//this.echo("Redirect to User Page....");
 	this.click('a[class="txt f-fs1"]',"80%","50%");
 	this.echo(this.getCurrentUrl());
 	mainPageUrl=this.getCurrentUrl();
@@ -55,7 +55,7 @@ var nickname;
 var uid;
 casper.waitForSelector('strong[id="event_count"]',null,null,10000);
 casper.then(function(){
-	this.echo("Load Complete");
+	//this.echo("Load Complete");
 	//this.capture('wyyyy.png');
 	nickname = this.fetchText('span.f-ff2.s-fc0');
 	uid = this.getElementAttribute('ul.data.s-fc3 a','href').replace(/\/user\/event\?id=/,'');
@@ -69,8 +69,8 @@ casper.then(function(){
 	if(this.exists('dt#ava img'))
 		imgPath=this.getElementAttribute('dt#ava img','src');
 	intro = this.fetchText('div.f-brk').replace(/个人介绍：/,'');
-	casper.echo('NickName:' + nickname + 'uid:' + uid);
-	casper.echo('Event:' + event + ' Follow:' + follow + ' Fan:' + fan);
+	//casper.echo('NickName:' + nickname + 'uid:' + uid);
+	//casper.echo('Event:' + event + ' Follow:' + follow + ' Fan:' + fan);
 	status={'event':event,'follow':follow,'fan':fan};
 });
 
@@ -88,7 +88,7 @@ casper.thenBypassIf(function(){
 },3);
 casper.then(function(){
 	this.click('strong[id="event_count"]');
-	this.echo('Switch To Events');
+	//this.echo('Switch To Events');
 });
 var shares=new Array();
 casper.waitForSelector('div[class="dcntc"]',null,null,10000);
@@ -104,7 +104,7 @@ casper.then(function(){
 			'div#' + shareList[i] + ' a.s-fc1');
 		var songArtist=this.fetchText(
 			'div#' + shareList[i] + ' a.s-fc3');
-		this.echo('Comment:' + comment + ' songName:' + songName + ' songArtist:' + songArtist);
+		//this.echo('Comment:' + comment + ' songName:' + songName + ' songArtist:' + songArtist);
 		shares.push({'songName':songName,'songArtist':songArtist,'href':href,'comment':comment});
 	}
 });
@@ -124,7 +124,7 @@ casper.thenBypassIf(function(){
 },3);
 casper.then(function(){
 	this.click('strong[id="follow_count"]');
-	this.echo('Switch To Follow');
+	//this.echo('Switch To Follow');
 });
 var follows=new Array();
 var maxPages=15;
@@ -150,7 +150,7 @@ casper.then(function(){
 			casper.wait(100);
 			casper.waitForSelector('a[class="s-fc7 f-fs1 nm f-thide"]',null,null,10000);
 			casper.then(getFollow);
-			casper.echo('Switch to Page '+currentPage);
+			//casper.echo('Switch to Page '+currentPage);
 		}
 	};
 	getFollow();
@@ -174,7 +174,7 @@ casper.thenBypassIf(function(){
 },3);
 casper.then(function(){
 	this.click('strong[id=fan_count]');
-	this.echo('Switch To Fans');
+	//this.echo('Switch To Fans');
 });
 var fans=new Array();
 casper.waitForSelector('a[class="s-fc7 f-fs1 nm f-thide"]',null,null,10000);
@@ -228,7 +228,7 @@ casper.then(function(){
 	//this.capture('test.png');
 	//this.captureSelector('rec.png','div.m-record');
 	this.click('div.more a');
-	this.echo('Switch to Weekly Songs Ranking...');
+	//this.echo('Switch to Weekly Songs Ranking...');
 });
 
 casper.waitWhileSelector('strong[id=fan_count]');//主界面消失
@@ -263,7 +263,7 @@ casper.then(function(){
 		percent=percent.replace(/%;/,'').replace(/width:/,'');
 		freqWeekly.push({'songName':songName,'songArtist':songArtist,'percent':percent});
 	}
-	this.echo('\n\n\n');
+	//this.echo('\n\n\n');
 	//this.echo(JSON.stringify(freqWeekly));
 });
 
@@ -292,7 +292,7 @@ casper.then(function(){
 		percent=percent.replace(/%;/,'').replace(/width:/,'');
 		freqAll.push({'songName':songName,'songArtist':songArtist,'percent':percent});
 	}
-	this.echo('\n\n\n');
+	//this.echo('\n\n\n');
 	//this.echo(JSON.stringify(freqAll));
 });
 
@@ -325,8 +325,8 @@ casper.then(function(){
 			var favCount=this.getElementAttribute('a.u-btni-fav','data-count');
 			var commentCount=this.fetchText('span#cnt_comment_count');
 			var id = this.getCurrentUrl().replace(/http:\/\/music\.163\.com\/playlist\?id=/,'');
-			this.echo('\n\nplayList:' + playListName + ' id:' + id + '  playCount:' + playCount + ' Fav:' + favCount + ' Comment:' + commentCount);
-			this.echo('description:' + description);
+			//this.echo('\n\nplayList:' + playListName + ' id:' + id + '  playCount:' + playCount + ' Fav:' + favCount + ' Comment:' + commentCount);
+			//this.echo('description:' + description);
 			var musicList=null;
 			var songData=new Array();
 			var i;
@@ -339,7 +339,7 @@ casper.then(function(){
 					var songId=specialSelect(musicList[i],'div.f-cb div.tt div.ttc span.txt a','href').replace(/\/song\?id=/,'');
 					if(songName == null || songName == '')continue;
 					songData.push({'songName' : songName, 'id' : songId});
-					this.echo('song:' + songName);
+					//this.echo('song:' + songName);
 				}
 			}
 			PlayLists.push({'id' : id,'playList' : playListName,'playCount' : playCount,'description' : description,'favCount' : favCount,'commentCount':commentCount,'musicList' : songData});
