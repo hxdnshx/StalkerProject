@@ -37,8 +37,13 @@ namespace StalkerProject
                 if (index == -1)
                 {
                     if (isFoundHead)
-                        throw new Exception("莫名的顺序,怀疑不对");
-                    pendingInsert.Add(ele);
+                    {
+                        Console.WriteLine("发现了异常数据：" + ele.ToString() + "原位置数据：" + oldList[pos>=0?pos:0]);
+                        oldList.Insert(pos+1,ele);
+                        onInsert?.Invoke(ele);
+                    }
+                    else
+                        pendingInsert.Add(ele);
                 }
                 else
                 {
