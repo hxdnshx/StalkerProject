@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -34,36 +35,45 @@ namespace StalkerProject.BilibiliObserver
         {
             for (;;)
             {
-                var ret = helper.HttpGet("https://api.live.bilibili.com/live/getInfo?roomid=" + TargetRoom);
-                JObject obj=JObject.Parse(ret);
-                if (obj["code"].Value<int>() == -400)
+                string ret = "";
+                try
                 {
-                    Console.WriteLine("无效的房间号ID:" + TargetRoom);
-                    return;
+                    ret = helper.HttpGet("https://api.live.bilibili.com/live/getInfo?roomid=" + TargetRoom);
+                    JObject obj = JObject.Parse(ret);
+                    if (obj["code"].Value<int>() == -400)
+                    {
+                        Console.WriteLine("无效的房间号ID:" + TargetRoom);
+                        return;
+                    }
+                    bool status = obj["data"]["_status"].Value<string>() == "on";
+                    string title = obj["data"]["ROOMTITLE"].Value<string>();
+                    string nickname = obj["data"]["ANCHOR_NICK_NAME"].Value<string>();
+                    Console.WriteLine(String.Format("Bilibili LiveRoom{0},Status:{1}", title, status ? "ON" : "OFF"));
+                    if (status != prevStatus)
+                    {
+                        if (status == true)
+                        {
+                            DiffDetected?.Invoke(
+                                "http://live.bilibili.com/" + TargetRoom,
+                                nickname + "开启了自己的直播间！",
+                                "直播间标题是：" + title,
+                                "Bilibili.Live." + TargetRoom);
+                        }
+                        else
+                        {
+                            DiffDetected?.Invoke(
+                                "http://live.bilibili.com/" + TargetRoom,
+                                nickname + "关闭了自己的直播间！",
+                                "直播间标题是：" + title,
+                                "Bilibili.Live." + TargetRoom);
+                        }
+                        prevStatus = status;
+                    }
                 }
-                bool status = obj["data"]["_status"].Value<string>()=="on";
-                string title = obj["data"]["ROOMTITLE"].Value<string>();
-                string nickname = obj["data"]["ANCHOR_NICK_NAME"].Value<string>();
-                Console.WriteLine(String.Format("Bilibili LiveRoom{0},Status:{1}",title,status?"ON":"OFF"));
-                if (status != prevStatus)
+                catch (Exception e)
                 {
-                    if (status == true)
-                    {
-                        DiffDetected?.Invoke(
-                            "http://live.bilibili.com/" + TargetRoom,
-                            nickname + "开启了自己的直播间！",
-                            "直播间标题是：" + title,
-                            "Bilibili.Live." + TargetRoom);
-                    }
-                    else
-                    {
-                        DiffDetected?.Invoke(
-                            "http://live.bilibili.com/" + TargetRoom,
-                            nickname + "关闭了自己的直播间！",
-                            "直播间标题是：" + title,
-                            "Bilibili.Live." + TargetRoom);
-                    }
-                    prevStatus = status;
+                    File.AppendAllText("LiveError.log",
+                        "\n" + e + "\n" + "收到包内容：\n" + ret);
                 }
                 //Do something
                 token.WaitHandle.WaitOne(Math.Max(300000, Interval));
