@@ -36,6 +36,8 @@ namespace StalkerProject.NetEaseObserver
             psi.RedirectStandardOutput = false;
             //psi.Verb = "RunAs";
             psi.UseShellExecute = false;
+            var randomOffset = new Random().Next(0, 1000 * 600);
+            Thread.Sleep(randomOffset);
             for (;;)
             {
                 
