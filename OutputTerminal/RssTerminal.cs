@@ -18,13 +18,23 @@ namespace StalkerProject.OutputTerminal
         public string Alias { get; set; }
         public int FeedId { get; set; }
         public string FeedName { get; set; }
+        public string OutputTimeZone { get; set; }
+        private TimeZoneInfo _timeZone;
         private LiteDatabase database=null;
         private SyndicationFeed feed;
         private Task updateJob;
         private CancellationTokenSource isCancel;
         public void Start()
         {
-            
+            try
+            {
+                _timeZone = TimeZoneInfo.FindSystemTimeZoneById(OutputTimeZone);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Invalid Time Zone Name:" + OutputTimeZone);
+                _timeZone=TimeZoneInfo.Local;
+            }
             feed=new SyndicationFeed(FeedName,"Provided By StalkerProject",
                 new Uri("http://127.0.0.1"),"id=" + FeedId.ToString(),DateTime.Now);
             isCancel=new CancellationTokenSource();
@@ -79,13 +89,14 @@ namespace StalkerProject.OutputTerminal
                             isFirst = false;
                             updateTime = val.OutputTime;
                         }
+                        var destTime = TimeZoneInfo.ConvertTime(val.OutputTime, TimeZoneInfo.Local, _timeZone);
                         SyndicationItem sitem = new SyndicationItem()
                         {
                             Title = new TextSyndicationContent(val.Summary),
                             //Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
                             Content = SyndicationContent.CreatePlaintextContent(val.Content),
-                            PublishDate = val.OutputTime,
-                            LastUpdatedTime = val.OutputTime,
+                            PublishDate = destTime,
+                            LastUpdatedTime = destTime,
                             Links = { new SyndicationLink(new Uri(val.RelatedAddress)) },
                             Id=GetStringHash(val.Summary)
                         };
@@ -141,6 +152,7 @@ namespace StalkerProject.OutputTerminal
             Alias = "RssTerminal" + randResult;
             FeedName = "RSS输出-" + randResult;
             Interval = 1200000;
+            OutputTimeZone = "China Standard Time";
         }
 
         [STKDescription("输出RSS信息")]
