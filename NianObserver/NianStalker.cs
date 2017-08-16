@@ -475,8 +475,6 @@ namespace StalkerProject.NianObserver
         {
             string inUrl= context.Request.RawUrl.Replace(subUrl, "");
             string[] splited = inUrl.Split('?')[0].Split('/');
-            bool isSuccess = false;
-            int id = -1;
             if (splited.Length == 0 || splited.Length==1)
             {
                 ResponseUserInfo(context);
