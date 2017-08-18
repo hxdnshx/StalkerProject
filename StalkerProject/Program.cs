@@ -29,8 +29,7 @@ namespace StalkerProject
             psi.UseShellExecute = true;
             Process.Start(psi).WaitForExit();//添加urlacl
         }
-
-        private static string ShellPath = "shell.txt";
+        
         static void Main(string[] args)
         {
             ServiceManager manager = new ServiceManager();

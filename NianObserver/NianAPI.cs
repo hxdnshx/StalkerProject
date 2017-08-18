@@ -9,6 +9,7 @@ using RedXuCSharpClass;
 using System.Web;
 using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace StalkerProject.NianObserver
 {
@@ -268,6 +269,20 @@ namespace StalkerProject.NianObserver
     }
     public class NianApi
     {
+        public static Semaphore RequestLimit
+        {
+            get
+            {
+                if (_requestLimit == null)
+                {
+                    //int limit = 5;
+                }
+                return _requestLimit;
+            }
+        }
+
+        private static Semaphore _requestLimit = null;
+
         private HttpHelper helper;
         private string uid;
         private string shell;
@@ -275,8 +290,6 @@ namespace StalkerProject.NianObserver
         public NianApi()
         {
             helper=new HttpHelper();
-            helper.SetUserAgent("NianiOS/5.0.3 (iPad; iOS 10.3.1; Scale/2.00)");
-            helper.SetAccept("*/*");
             helper.SetEncoding(Encoding.UTF8);
         }
 

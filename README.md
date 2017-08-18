@@ -9,6 +9,7 @@
 1. 抓取目标
  - [x] 网易云（完成）（[netease.js](https://github.com/hxdnshx/StalkerProject/blob/master/netease.js)）
  - [x] 念（除图片拉取全部完成）（登录相关参考[nian-Robot](https://github.com/ConnorNowhere/nian-robot)）（[API-nian.so](https://github.com/hxdnshx/StalkerProject/blob/master/API-nian.so)）(直接使用网页抓取,可能会增加浏览计数)
+ - [ ] RSS源
  - [ ] 微博(可登录)
  - [ ] QQ（待定）
  - [ ] 微信朋友圈（待定）
@@ -22,7 +23,8 @@
 3. 数据输出
  - [x] 邮件(完成!)
  - [x] RSS(完成!)
- - [ ] 网页报表
+ - [x] 网页报表(支持念记录的网络显示)
+ - [x] 微信推送(通过[ServerChan](http://sc.ftqq.com)实现)
 4. 工程部署
  - [ ] docker
 5. 系统管理
