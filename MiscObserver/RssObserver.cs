@@ -10,6 +10,7 @@ using System.Xml;
 using SQLite.Net;
 using System.IO;
 using SQLite.Net.Attributes;
+using SQLite.Net.Interop;
 using SQLite.Net.Platform.Generic;
 using SQLite.Net.Platform.Win32;
 
@@ -63,11 +64,9 @@ namespace StalkerProject.MiscObserver
         public SQLiteConnection CreateConnectionForSchemaCreation(string fileName)
         {
             var conn = new SQLiteConnection(
-#if __MonoCS__
+                (Environment.OSVersion.ToString().IndexOf("Windows")!=-1) ?
+                new SQLitePlatformWin32() as ISQLitePlatform : 
                 new SQLitePlatformGeneric()
-#else
-                new SQLitePlatformWin32()
-#endif
                 , fileName);
             conn.CreateTable<RSSData>();
             return conn;
