@@ -104,7 +104,7 @@ namespace StalkerProject.OutputTerminal
                     }
                     feed.Items = item;
                     feed.LastUpdatedTime = updateTime;
-                    Console.WriteLine("RssData Updated");
+                    //Console.WriteLine("RssData Updated");
 
                 }
                 catch (Exception e)
