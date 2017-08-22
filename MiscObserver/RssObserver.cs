@@ -51,8 +51,9 @@ namespace StalkerProject.MiscObserver
                 DateTime dt;
                 if (!DateTime.TryParse(data, out dt))
                     dt = DateTime.ParseExact(data, _customUtcDateTimeFormat, CultureInfo.InvariantCulture);
-                string result = dt.ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss zzz", CultureInfo.InvariantCulture);
-                //实际做了这种事情：Sun, 20 Aug 2017 05:12:00 GMT => Sun, 20 Aug 2017 05:12:00 +08:00
+                string result = dt.ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'Z'", CultureInfo.InvariantCulture);
+                //实际做了这种事情：Sun, 20 Aug 2017 05:12:00 GMT => Sun, 20 Aug 2017 05:12:00 +08:00 (当转换为ddd, dd MMM yyyy HH:mm:ss zzz)
+                //实际做了这种事情：Sun, 20 Aug 2017 04:01:00 GMT To Sun, 20 Aug 2017 04:01:00 Z(当转换为ddd, dd MMM yyyy HH:mm:ss 'Z')
                 return result;
             }
             return data;
@@ -157,7 +158,7 @@ namespace StalkerProject.MiscObserver
                             PubTime = synItem.PublishDate.DateTime.ToUniversalTime()
                         });
                     }
-                    DiffDetected?.Invoke(synItem.Id, synItem.Title.Text, synItem.Summary.Text, Alias + ".Updated");
+                    DiffDetected?.Invoke(synItem.Id, title + " - " + synItem.Title.Text, synItem.Summary.Text, Alias + ".Updated");
                 }
             });
             /*
