@@ -71,7 +71,9 @@ namespace StalkerProject.MiscObserver
                 DateTime dt;
                 if (!DateTime.TryParse(dateString, out dt))
                     dt = DateTime.ParseExact(dateString, _customUtcDateTimeFormat, CultureInfo.InvariantCulture);
-                return dt.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                string result = dt.ToUniversalTime().ToString("r", CultureInfo.InvariantCulture);
+                Console.WriteLine(dateString + " To " + result);
+                return result;
             }
             else
             {
