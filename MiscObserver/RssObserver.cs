@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Globalization;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Text;
@@ -29,6 +30,56 @@ namespace StalkerProject.MiscObserver
             return Convert.ToInt64((date.ToUniversalTime() - epoch).TotalSeconds);
         }
     }
+
+    class MyXmlReader : XmlTextReader
+    {
+        private bool readingDate = false;
+        private readonly string _customUtcDateTimeFormat = "ddd, dd MMM yyyy HH:MM:SS GMT"; // Wed Oct 07 08:00:07 GMT 2009
+
+        public MyXmlReader(Stream s) : base(s) { }
+
+        public MyXmlReader(string inputUri, string customTimeFormat = "") : base(inputUri)
+        {
+            _customUtcDateTimeFormat = customTimeFormat;
+        }
+
+        public override void ReadStartElement()
+        {
+            if (string.Equals(base.NamespaceURI, string.Empty, StringComparison.InvariantCultureIgnoreCase) &&
+                (string.Equals(base.LocalName, "lastBuildDate", StringComparison.InvariantCultureIgnoreCase) ||
+                 string.Equals(base.LocalName, "pubDate", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                readingDate = true;
+            }
+            base.ReadStartElement();
+        }
+
+        public override void ReadEndElement()
+        {
+            if (readingDate)
+            {
+                readingDate = false;
+            }
+            base.ReadEndElement();
+        }
+
+        public override string ReadString()
+        {
+            if (readingDate)
+            {
+                string dateString = base.ReadString();
+                DateTime dt;
+                if (!DateTime.TryParse(dateString, out dt))
+                    dt = DateTime.ParseExact(dateString, _customUtcDateTimeFormat, CultureInfo.InvariantCulture);
+                return dt.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                return base.ReadString();
+            }
+        }
+    }
+
     public class RssObserver : STKWorker
     {
         [Table("FeedData")]
@@ -42,6 +93,7 @@ namespace StalkerProject.MiscObserver
             public DateTime PubTime { get; set; }
         }
         public string URL { get; set; }
+        public string CustomTimeFormat { get; set; }
         private SQLiteConnection _conn;
 
         protected override void Prepare()
@@ -49,12 +101,12 @@ namespace StalkerProject.MiscObserver
             _conn = CreateConnectionForSchemaCreation(Alias + ".db");
         }
 
-        public static SyndicationFeed GetFeed(string uri)
+        public static SyndicationFeed GetFeed(string uri, string timeFormat = "")
         {
             if (!string.IsNullOrEmpty(uri))
             {
                 var ff = new Rss20FeedFormatter(); // for Atom you can use Atom10FeedFormatter()
-                var xr = XmlReader.Create(uri);
+                var xr = new MyXmlReader(uri,timeFormat);
                 ff.ReadFrom(xr);
                 return ff.Feed;
             }
@@ -90,7 +142,7 @@ namespace StalkerProject.MiscObserver
             SyndicationFeed feed;
             try
             {
-                feed = GetFeed(URL);
+                feed = GetFeed(URL,CustomTimeFormat);
             }
             catch (Exception e)
             {
@@ -164,6 +216,7 @@ namespace StalkerProject.MiscObserver
             int randInt = new Random().Next(1, 100000);
             Alias = "RssObserver" + randInt.ToString();
             Interval = 3600000;
+            CustomTimeFormat = "ddd, dd MMM yyyy HH:MM:SS GMT";
         }
 
         public Action<string, string, string, string> DiffDetected { get; set; }
