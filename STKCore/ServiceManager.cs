@@ -65,7 +65,17 @@ namespace StalkerProject
                 FileInfo fi=new FileInfo(file);
                 if (loadedAssemblyList.Contains(fi.Name)) continue;
                 Console.WriteLine("Found:" + fi.FullName);
-                var assembly = Assembly.LoadFrom(file);
+                Assembly assembly = null;
+                try
+                {
+                    assembly = Assembly.LoadFrom(file);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Failed to Load Assembly:" + fi.FullName);
+                    continue;
+                    //Failed To Load Assembley
+                }
                 foreach (var aType in assembly.GetTypes())
                 {
                     if (aType.GetInterfaces().Contains(typeof(ISTKService)))
