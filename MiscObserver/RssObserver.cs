@@ -95,7 +95,8 @@ namespace StalkerProject.MiscObserver
             catch (Exception e)
             {
                 //Network Error
-                Console.Write("Unable to Get Feed:" + URL);
+                Console.WriteLine(e);
+                Console.WriteLine("Unable to Get Feed:" + URL);
                 return;
             }
             string title = feed.Title.Text;
