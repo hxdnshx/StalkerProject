@@ -33,7 +33,6 @@ namespace StalkerProject.MiscObserver
 
     class MyXmlReader : XmlTextReader
     {
-        private bool readingDate = false;
         private readonly string _customUtcDateTimeFormat = "ddd, dd MMM yyyy HH:MM:SS GMT"; // Wed Oct 07 08:00:07 GMT 2009
 
         public MyXmlReader(Stream s) : base(s) { }
@@ -43,42 +42,20 @@ namespace StalkerProject.MiscObserver
             _customUtcDateTimeFormat = customTimeFormat;
         }
 
-        public override void ReadStartElement()
+        public override string ReadElementContentAsString()
         {
-            if (string.Equals(base.NamespaceURI, string.Empty, StringComparison.InvariantCultureIgnoreCase) &&
-                (string.Equals(base.LocalName, "lastBuildDate", StringComparison.InvariantCultureIgnoreCase) ||
-                 string.Equals(base.LocalName, "pubDate", StringComparison.InvariantCultureIgnoreCase)))
+            string nodeName = this.LocalName;
+            string data = base.ReadElementContentAsString();
+            if (nodeName == "pubDate")
             {
-                readingDate = true;
-            }
-            base.ReadStartElement();
-        }
-
-        public override void ReadEndElement()
-        {
-            if (readingDate)
-            {
-                readingDate = false;
-            }
-            base.ReadEndElement();
-        }
-
-        public override string ReadString()
-        {
-            if (readingDate)
-            {
-                string dateString = base.ReadString();
                 DateTime dt;
-                if (!DateTime.TryParse(dateString, out dt))
-                    dt = DateTime.ParseExact(dateString, _customUtcDateTimeFormat, CultureInfo.InvariantCulture);
-                string result = dt.ToUniversalTime().ToString("r", CultureInfo.InvariantCulture);
-                Console.WriteLine(dateString + " To " + result);
+                if (!DateTime.TryParse(data, out dt))
+                    dt = DateTime.ParseExact(data, _customUtcDateTimeFormat, CultureInfo.InvariantCulture);
+                string result = dt.ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss zzz", CultureInfo.InvariantCulture);
+                //实际做了这种事情：Sun, 20 Aug 2017 05:12:00 GMT => Sun, 20 Aug 2017 05:12:00 +08:00
                 return result;
             }
-            else
-            {
-                return base.ReadString();
-            }
+            return data;
         }
     }
 
