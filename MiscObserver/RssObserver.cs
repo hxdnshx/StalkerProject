@@ -7,8 +7,11 @@ using System.ServiceModel.Syndication;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Data.SQLite;
+using SQLite.Net;
 using System.IO;
+using SQLite.Net.Attributes;
+using SQLite.Net.Platform.Generic;
+using SQLite.Net.Platform.Win32;
 
 namespace StalkerProject.MiscObserver
 {
@@ -24,50 +27,17 @@ namespace StalkerProject.MiscObserver
         {
             return Convert.ToInt64((date.ToUniversalTime() - epoch).TotalSeconds);
         }
-        public static void ExecCommand(this SQLiteConnection conn, string command,
-            Dictionary<string, object> parameters = null)
-        {
-            using (var cmd = new SQLiteCommand(conn))
-            {
-                cmd.CommandText = command;
-                if (parameters != null)
-                {
-                    foreach (var param in parameters)
-                    {
-                        cmd.Parameters.Add(new SQLiteParameter(param.Key, param.Value));
-                    }
-                }
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        public static DataTable ExecQuery(this SQLiteConnection conn, string query,
-            Dictionary<string, object> parameters = null)
-        {
-            DataTable dt = new DataTable();
-            using (var cmd = new SQLiteCommand(conn))
-            {
-                SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd);
-                cmd.CommandText = query;
-                if (parameters != null)
-                {
-                    foreach (var param in parameters)
-                    {
-                        cmd.Parameters.Add(new SQLiteParameter(param.Key, param.Value));
-                    }
-                }
-                adapter.Fill(dt);
-            }
-            return dt;
-        }
     }
     public class RssObserver : STKWorker
     {
+        [Table("FeedData")]
         class RSSData
         {
+            [Unique]
             public string GUID { get; set; }
             public string Title { get; set; }
             public string Description { get; set; }
+            [Indexed]
             public DateTime PubTime { get; set; }
         }
         public string URL { get; set; }
@@ -92,36 +62,31 @@ namespace StalkerProject.MiscObserver
 
         public SQLiteConnection CreateConnectionForSchemaCreation(string fileName)
         {
-            bool isNew = !File.Exists(fileName);
-            var conn = new SQLiteConnection();
-            conn.ConnectionString = new DbConnectionStringBuilder()
-            {
-                {"Data Source", fileName},
-                {"Version", "3"},
-                {"FailIfMissing", "False"},
-            }.ConnectionString;
-            conn.Open();
-            if (isNew)
-            {
-                using (SQLiteTransaction trans = conn.BeginTransaction())
-                {
-                    conn.ExecCommand(
-                        "CREATE TABLE FeedData (GUID TEXT UNIQUE, Title TEXT, Desc TEXT, PubTime INTEGER);" + 
-                        "CREATE INDEX idx_PubTime ON FeedData(PubTime);");
-                    trans.Commit();
-                }
-            }
+            var conn = new SQLiteConnection(
+#if __MonoCS__
+                new SQLitePlatformGeneric()
+#else
+                new SQLitePlatformWin32()
+#endif
+                , fileName);
+            conn.CreateTable<RSSData>();
             return conn;
+        }
+
+        [Table("FeedData")]
+        class FeedGUID
+        {
+            public string GUID { get; set; }
         }
 
         protected override void Run()
         {
             base.Run();
             List<string> historyFeeds = new List<string>();
-            var dt = _conn.ExecQuery("SELECT GUID FROM FeedData ORDER BY PubTime DESC LIMIT 30");
-            foreach (DataRow dataRow in dt.Rows)
+            var result = _conn.Query<FeedGUID>("SELECT GUID FROM FeedData ORDER BY PubTime DESC LIMIT 30");
+            foreach (var val in result)
             {
-                historyFeeds.Add(dataRow["GUID"].ToString());
+                historyFeeds.Add(val.GUID);
             }
             SyndicationFeed feed;
             try
@@ -134,6 +99,37 @@ namespace StalkerProject.MiscObserver
                 Console.Write("Unable to Get Feed:" + URL);
                 return;
             }
+            string title = feed.Title.Text;
+            _conn.RunInTransaction(() =>
+            {
+                foreach (var synItem in feed.Items.Reverse())
+                {
+                    if (historyFeeds.IndexOf(synItem.Id) != -1) continue;
+                    try
+                    {
+                        _conn.Insert(new RSSData
+                        {
+                            Description = synItem.Summary.Text,
+                            GUID = synItem.Id,
+                            Title = synItem.Title.Text,
+                            PubTime = synItem.PublishDate.DateTime.ToUniversalTime()
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        _conn.Insert(new RSSData
+                        {
+                            Description = synItem.Summary.Text,
+                            GUID = synItem.Id + "111",
+                            Title = title + " - " + synItem.Title.Text,
+                            PubTime = synItem.PublishDate.DateTime.ToUniversalTime()
+                        });
+                    }
+                    DiffDetected?.Invoke(synItem.Id, synItem.Title.Text, synItem.Summary.Text, Alias + ".Updated");
+                }
+            });
+            /*
             using (SQLiteTransaction trans = _conn.BeginTransaction())
             {
                 foreach (var synItem in feed.Items.Reverse())
@@ -160,6 +156,7 @@ namespace StalkerProject.MiscObserver
                 }
                 trans.Commit();
             }
+            */
         }
 
         public override void LoadDefaultSetting()
