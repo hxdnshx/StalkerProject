@@ -69,6 +69,8 @@ namespace StalkerProject.NetEaseObserver
                 string sourceValue;
                 data.ListItems.TryGetValue(prop.Key, out sourceValue);
                 var targetValue = prop.Value.Value<string>();
+                if (sourceValue == null) sourceValue = "";
+                if (targetValue == null) targetValue = "";
                 if (sourceValue != targetValue)
                 {
                     DiffDetected?.Invoke(
