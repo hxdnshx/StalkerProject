@@ -404,19 +404,15 @@ namespace StalkerProject.NianObserver
                     }
                     GetDreamList(TargetUID, data);
                     col.Update(data);
-                    Console.WriteLine( Alias + ":Data Fetched");
+                    
                     currentPeroid++;
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    string outputstr = e.ToString() + "\n";
-                    string anotherPart = "模块NianStalker发生了异常!\n"
-                                         + e.StackTrace
-                                         + "\n"
-                                         + e.InnerException.ToString();
-                    File.AppendAllText("ErrorDump.txt", outputstr + anotherPart);
+                    Console.WriteLine("Module" + Alias + " Throw an Exception");
                 }
+                Console.WriteLine(Alias + ":Data Fetched");
                 trans.Commit();
                 token.WaitHandle.WaitOne(Math.Max(60000, Interval));
                 token.ThrowIfCancellationRequested();
