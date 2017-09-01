@@ -324,6 +324,8 @@ casper.then(function(){
 			var description=this.fetchText('p.intr');
 			var favCount=this.getElementAttribute('a.u-btni-fav','data-count');
 			var commentCount=this.fetchText('span#cnt_comment_count');
+			if(commentCount === "评论")
+				commentCount = "0";
 			var id = this.getCurrentUrl().replace(/http:\/\/music\.163\.com\/playlist\?id=/,'');
 			//this.echo('\n\nplayList:' + playListName + ' id:' + id + '  playCount:' + playCount + ' Fav:' + favCount + ' Comment:' + commentCount);
 			//this.echo('description:' + description);
