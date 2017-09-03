@@ -1,13 +1,18 @@
 var casper = require('casper').create();
 var util = require('utils');
 var userName=casper.cli.args[0];
-var site='http://music.163.com'
+var isTest = (casper.cli.args[2] === "Test");
+var site='http://music.163.com';
 var defaultheader={
 	'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36',
 	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 	'Accept-Encoding': 'gzip, deflate, sdch',
 	'Accept-Language': 'zh-CN,zh;q=0.8',
 	'Host' : 'music.163.com'
+};
+var debugLog = function(content){
+	if(isTest == true)
+		casper.echo(content);
 };
 var specialSelect=function(liId,subSelector,attr){
 	return casper.evaluate(function(liId,subSelector,attr){
@@ -35,10 +40,10 @@ casper.then(function(){casper.switchToFrame("contentFrame");});
 casper.waitForSelector('a[class="txt f-fs1"]');
 casper.then(function(){
 	
-	//casper.echo('PageLoaded');
-	//this.echo("Redirect to User Page....");
+	debugLog('PageLoaded');
+	debugLog("Redirect to User Page....");
 	this.click('a[class="txt f-fs1"]',"80%","50%");
-	//this.echo(this.getCurrentUrl());
+	debugLog(this.getCurrentUrl());
 	mainPageUrl=this.getCurrentUrl();
 });
 
@@ -55,7 +60,7 @@ var nickname;
 var uid;
 casper.waitForSelector('strong[id="event_count"]',null,null,10000);
 casper.then(function(){
-	//this.echo("Load Complete");
+	debugLog("Load Complete");
 	//this.capture('wyyyy.png');
 	nickname = this.fetchText('span.f-ff2.s-fc0');
 	uid = this.getElementAttribute('ul.data.s-fc3 a','href').replace(/\/user\/event\?id=/,'');
@@ -69,8 +74,8 @@ casper.then(function(){
 	if(this.exists('dt#ava img'))
 		imgPath=this.getElementAttribute('dt#ava img','src');
 	intro = this.fetchText('div.f-brk').replace(/个人介绍：/,'');
-	//casper.echo('NickName:' + nickname + 'uid:' + uid);
-	//casper.echo('Event:' + event + ' Follow:' + follow + ' Fan:' + fan);
+	debugLog('NickName:' + nickname + 'uid:' + uid);
+	debugLog('Event:' + event + ' Follow:' + follow + ' Fan:' + fan);
 	status={'event':event,'follow':follow,'fan':fan};
 });
 
@@ -88,7 +93,7 @@ casper.thenBypassIf(function(){
 },3);
 casper.then(function(){
 	this.click('strong[id="event_count"]');
-	//this.echo('Switch To Events');
+	debugLog('Switch To Events');
 });
 var shares=new Array();
 casper.waitForSelector('div[class="dcntc"]',null,null,10000);
@@ -103,8 +108,8 @@ casper.then(function(){
 		var songName=this.fetchText(
 			'div#' + shareList[i] + ' a.s-fc1');
 		var songArtist=this.fetchText(
-			'div#' + shareList[i] + ' a.s-fc3');
-		//this.echo('Comment:' + comment + ' songName:' + songName + ' songArtist:' + songArtist);
+			'div#' + shareList[i] + ' div.scnt a.s-fc3');
+		debugLog('Comment:' + comment + ' songName:' + songName + ' songArtist:' + songArtist);
 		shares.push({'songName':songName,'songArtist':songArtist,'href':href,'comment':comment});
 	}
 });
@@ -124,7 +129,7 @@ casper.thenBypassIf(function(){
 },3);
 casper.then(function(){
 	this.click('strong[id="follow_count"]');
-	//this.echo('Switch To Follow');
+	debugLog('Switch To Follow');
 });
 var follows=new Array();
 var maxPages=15;
@@ -174,7 +179,7 @@ casper.thenBypassIf(function(){
 },3);
 casper.then(function(){
 	this.click('strong[id=fan_count]');
-	//this.echo('Switch To Fans');
+	debugLog('Switch To Fans');
 });
 var fans=new Array();
 casper.waitForSelector('a[class="s-fc7 f-fs1 nm f-thide"]',null,null,10000);
@@ -228,7 +233,7 @@ casper.then(function(){
 	//this.capture('test.png');
 	//this.captureSelector('rec.png','div.m-record');
 	this.click('div.more a');
-	//this.echo('Switch to Weekly Songs Ranking...');
+	debugLog('Switch to Weekly Songs Ranking...');
 });
 
 casper.waitWhileSelector('strong[id=fan_count]');//主界面消失
@@ -236,10 +241,19 @@ casper.waitForSelector('div.song');//加载完成
 
 var existsWeekly=true;
 casper.thenBypassIf(function(){
-	if(!this.exists('span#songsweek.z-sel'))
+	debugLog('Check whether Song Ranking exists.');
+	if(!this.exists('span#songsweek'))
 	{
+		debugLog('Not Exists');
 		existsWeekly=false;
 		return true;
+	}
+	debugLog('Exists');
+	if(!this.exists('span#songsweek.z-sel'))
+	{
+		//Click
+		this.click('span#songsweek');
+		this.waitForSelector('div.m-record');
 	}
 	return false;
 },4);
@@ -273,7 +287,7 @@ casper.then(function(){
 //主要可以分析歌曲各听了多少次吧
 casper.then(function(){
 	casper.click('span#songsall');
-	this.echo('Switch to All Songs Ranking...');
+	debugLog('Switch to All Songs Ranking...');
 });
 
 casper.waitWhileSelector('div.song');//加载中
@@ -308,7 +322,7 @@ casper.then(function(){
 	//this.capture('test3.png');
 	var links=this.getElementsAttribute('ul#cBox a.tit.f-thide.s-fc0','href');
 	var iter;
-	//this.echo('playList Count:' + links.length);
+	debugLog('playList Count:' + links.length);
 	for(iter=0;iter<links.length;iter++)
 	{
 
