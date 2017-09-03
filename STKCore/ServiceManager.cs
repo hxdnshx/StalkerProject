@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace StalkerProject
 {
-    public class ServiceManager
+    public class ServiceManager : STKWorker
     {
         public List<ISTKService> ActiveServices { get; set; }
         public Dictionary<string,Type> ServiceTypes=new Dictionary<string, Type>();
@@ -94,6 +97,8 @@ namespace StalkerProject
             EnumActions();
             LoadAssemblyInfo();
             ActiveServices=new List<ISTKService>();
+            ActiveServices.Add(this);
+            LoadDefaultSetting();
         }
         /// <summary>
         /// 读取配置Xml文档
@@ -185,8 +190,8 @@ namespace StalkerProject
             {
                 var srvRoot=new XElement("Services");
                 root.Add(srvRoot);
-                foreach (var service in ActiveServices)
-                {
+                foreach (var service in ActiveServices) {
+                    if (service == this) continue;
                     var serviceXml= new XElement(
                             "Service",
                             new XAttribute("Class", service.GetType().Name));
@@ -231,5 +236,58 @@ namespace StalkerProject
             }
             doc.Save(destPath);
         }
+
+        protected override void Run() {
+            base.Run();
+            if (IsFirstRun)
+                return;
+            foreach (var service in ActiveServices) {
+                if (service is STKWorker) {
+                    var srv = service as STKWorker;
+                    if (srv.ServiceStatus == false && _crashedServices.Contains(srv) == false) {
+                        _crashedServices.Add(srv);
+                        ServiceCrashed?.Invoke("ServiceManager",$"{srv.Alias}服务停止了运行!","哭哭哦","");
+                    }
+                }
+            }
+        }
+        List<ISTKService> _crashedServices = new List<ISTKService>();
+
+        public override void LoadDefaultSetting() {
+            base.LoadDefaultSetting();
+            Alias = "ServiceManager";
+            Interval = 3600000;
+        }
+
+        [STKDescription("输出RSS信息")]
+        public void DisplayStatus(HttpListenerContext context, string subUrl)
+        {
+            var obj = new JObject();
+            var arr = new JArray();
+            obj.Add("services", arr);
+            foreach (var service in ActiveServices)
+            {
+                var stat = new JObject();
+                stat.Add("alias", service.Alias);
+                stat.Add("type", service.GetType().Name);
+                if (service is STKWorker)
+                {
+                    var srv = service as STKWorker;
+                    stat.Add("lastexectime", srv.LastExecTime.ToString());
+                    stat.Add("nextexectime", srv.ServiceStatus ? srv.NextExecTime.ToString() : "-");
+                    stat.Add("status", srv.ServiceStatus ? "running" : "crashed");
+                }
+                else
+                {
+                    stat.Add("lastexectime", "-");
+                    stat.Add("nextexectime", "-");
+                    stat.Add("status", "running");
+                }
+                arr.Add(stat);
+            }
+            context.ResponseString(obj.ToString());
+        }
+
+        public Action<string, string, string, string> ServiceCrashed { get; set; }
     }
 }
