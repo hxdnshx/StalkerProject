@@ -23,6 +23,10 @@ namespace StalkerProject
 
         public bool ServiceStatus => updateJob?.Status == TaskStatus.Running;
         public bool IsWaitingForNextRound { get; private set; }
+        public DateTime LastExecTime => _lastExecTime;
+        public DateTime NextExecTime => _lastExecTime.AddMilliseconds(Interval);
+
+        private DateTime _lastExecTime;
 
         public void Start()
         {
@@ -38,6 +42,7 @@ namespace StalkerProject
             for (;;)
             {
                 try {
+                    _lastExecTime = DateTime.UtcNow;
                     IsWaitingForNextRound = false;
                     Run();
                 }
@@ -49,7 +54,7 @@ namespace StalkerProject
                 }
                 IsWaitingForNextRound = true;
                 IsFirstRun = false;
-                token.WaitHandle.WaitOne(Interval);
+                token.WaitHandle.WaitOne(Math.Max(10000,Interval));
                 token.ThrowIfCancellationRequested();
             }
         }
