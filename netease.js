@@ -38,7 +38,7 @@ casper.then(function(){
 	//casper.echo('PageLoaded');
 	//this.echo("Redirect to User Page....");
 	this.click('a[class="txt f-fs1"]',"80%","50%");
-	this.echo(this.getCurrentUrl());
+	//this.echo(this.getCurrentUrl());
 	mainPageUrl=this.getCurrentUrl();
 });
 
@@ -308,7 +308,7 @@ casper.then(function(){
 	//this.capture('test3.png');
 	var links=this.getElementsAttribute('ul#cBox a.tit.f-thide.s-fc0','href');
 	var iter;
-	this.echo('playList Count:' + links.length);
+	//this.echo('playList Count:' + links.length);
 	for(iter=0;iter<links.length;iter++)
 	{
 

@@ -50,7 +50,7 @@ namespace StalkerProject.NetEaseObserver
                     string ret = File.ReadAllText(TargetUser + ".json");
                     JObject obj=JObject.Parse(ret);
                     OnDataFetched?.Invoke(obj);
-                    Console.WriteLine("Message Fetched.");
+                    //Console.WriteLine("Message Fetched.");
                 }
 
                 if (isTerminate.WaitOne(Math.Max(Interval, 60000)))
