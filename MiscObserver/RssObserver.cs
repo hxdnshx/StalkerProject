@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using SQLite.Net;
 using System.IO;
+using System.Threading;
 using SQLite.Net.Attributes;
 using SQLite.Net.Interop;
 using SQLite.Net.Platform.Generic;
@@ -96,8 +97,6 @@ namespace StalkerProject.MiscObserver
         public SQLiteConnection CreateConnectionForSchemaCreation(string fileName)
         {
             var conn = new SQLiteConnection(
-                (Environment.OSVersion.ToString().IndexOf("Windows")!=-1) ?
-                new SQLitePlatformWin32() as ISQLitePlatform : 
                 new SQLitePlatformGeneric()
                 , fileName);
             conn.CreateTable<RSSData>();
@@ -110,9 +109,15 @@ namespace StalkerProject.MiscObserver
             public string GUID { get; set; }
         }
 
+        private bool _isFirst = true;
+
         protected override void Run()
         {
             base.Run();
+            if (_isFirst) {
+                _isFirst = false;
+                Thread.Sleep(new Random().Next(0,2000000));
+            }
             List<string> historyFeeds = new List<string>();
             var result = _conn.Query<FeedGUID>("SELECT GUID FROM FeedData ORDER BY PubTime DESC LIMIT 30");
             foreach (var val in result)
