@@ -11,7 +11,7 @@ using SQLite.Net.Platform.Generic;
 namespace StalkerProject.OutputTerminal
 {
 
-    class DiffDatabase : ISTKService
+    public class DiffDatabase : ISTKService
     {
         public string Alias { get; set; }
         public string DatabasePath { get; set; }

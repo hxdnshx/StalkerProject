@@ -109,13 +109,10 @@ namespace StalkerProject.MiscObserver
             public string GUID { get; set; }
         }
 
-        private bool _isFirst = true;
-
         protected override void Run()
         {
             base.Run();
-            if (_isFirst) {
-                _isFirst = false;
+            if (IsFirstRun) {
                 Thread.Sleep(new Random().Next(0,2000000));
             }
             List<string> historyFeeds = new List<string>();
@@ -198,6 +195,7 @@ namespace StalkerProject.MiscObserver
 
         public override void LoadDefaultSetting()
         {
+            base.LoadDefaultSetting();
             int randInt = new Random().Next(1, 100000);
             Alias = "RssObserver" + randInt.ToString();
             Interval = 3600000;

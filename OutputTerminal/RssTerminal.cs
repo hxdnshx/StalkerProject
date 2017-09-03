@@ -12,20 +12,17 @@ using SQLite.Net;
 
 namespace StalkerProject.OutputTerminal
 {
-    public class RssTerminal : ISTKService
+    public class RssTerminal : STKWorker
     {
-        public int Interval { get; set; }
-        public string Alias { get; set; }
         public int FeedId { get; set; }
         public string FeedName { get; set; }
         public string OutputTimeZone { get; set; }
         private TimeZoneInfo _timeZone;
         private SQLiteConnection database=null;
         private SyndicationFeed feed;
-        private Task updateJob;
-        private CancellationTokenSource isCancel;
-        public void Start()
-        {
+
+        protected override void Prepare() {
+            base.Prepare();
             try
             {
                 _timeZone = TimeZoneInfo.FindSystemTimeZoneById(OutputTimeZone);
@@ -33,13 +30,10 @@ namespace StalkerProject.OutputTerminal
             catch (Exception)
             {
                 Console.WriteLine("Invalid Time Zone Name:" + OutputTimeZone);
-                _timeZone=TimeZoneInfo.Local;
+                _timeZone = TimeZoneInfo.Local;
             }
-            feed=new SyndicationFeed(FeedName,"Provided By StalkerProject",
-                new Uri("http://127.0.0.1"),"id=" + FeedId.ToString(),DateTime.Now);
-            isCancel=new CancellationTokenSource();
-            updateJob=new Task(() => { UpdateLoop(isCancel.Token);},isCancel.Token);
-            updateJob.Start();
+            feed = new SyndicationFeed(FeedName, "Provided By StalkerProject",
+                new Uri("http://127.0.0.1"), "id=" + FeedId.ToString(), DateTime.Now);
         }
 
         public void GetDatabase(SQLiteConnection db)
@@ -64,89 +58,66 @@ namespace StalkerProject.OutputTerminal
             }
         }
 
-        public void UpdateLoop(CancellationToken token)
-        {
-            token.WaitHandle.WaitOne(10000);//WaitFor 10 seconds
-            if (database == null)
+        protected override void Run() {
+            base.Run();
+            if (IsFirstRun)
             {
-                Console.WriteLine("No DiffDatabase connected,Service Terminate");
-            }
-            DateTime updateTime=DateTime.Now;
-            for (;;)
-            {
-                
-                //Rebuild RssData
-                try {
-                    var iter = (from p in database.Table<DiffData>()
-                        orderby p.OutputTime descending
-                        select p).Take(50);
-                    List<SyndicationItem> item = new List<SyndicationItem>();
-                    bool isFirst = true;
-                    foreach (var val in iter)
-                    {
-                        if (isFirst)
-                        {
-                            isFirst = false;
-                            updateTime = val.OutputTime;
-                        }
-                        var destTime = TimeZoneInfo.ConvertTime(val.OutputTime, _timeZone);
-                        SyndicationItem sitem = new SyndicationItem()
-                        {
-                            Title = new TextSyndicationContent(val.Summary),
-                            //Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
-                            Content = SyndicationContent.CreateHtmlContent(val.Content),
-                            PublishDate = destTime,
-                            LastUpdatedTime = destTime,
-                            Links = { new SyndicationLink(new Uri(val.RelatedAddress)) },
-                            Id=GetStringHash(val.Summary)
-                        };
-                        item.Add(sitem);
-                    }
-                    feed.Items = item;
-                    feed.LastUpdatedTime = updateTime;
-                    //Console.WriteLine("RssData Updated");
-
-                }
-                catch (Exception e)
+                if (database == null)
+                    Thread.Sleep(10000); //WaitFor 10 seconds
+                if (database == null)
                 {
-                    Console.WriteLine(e);
-                    string outputstr=e.ToString() + "\n";
-                    string anotherPart = "模块RssTerminal发生了异常!\n"
-                                         + e.StackTrace
-                                         + "\n"
-                                         + e.InnerException;
-                    File.AppendAllText("ErrorDump.txt",outputstr+anotherPart);
+                    Console.WriteLine("No DiffDatabase connected,Service Terminate");
                 }
-                token.WaitHandle.WaitOne(Math.Max(60000, Interval));
-                token.ThrowIfCancellationRequested();
             }
-        }
-
-        public void Stop()
-        {
-            if (updateJob.IsCompleted)
-            {
-                isCancel.Dispose();
-                return;
-            }
-            isCancel.Cancel();
+            DateTime updateTime = DateTime.Now;
+            //Rebuild RssData
             try
             {
-                updateJob.Wait();
+                var iter = (from p in database.Table<DiffData>()
+                            orderby p.OutputTime descending
+                            select p).Take(50);
+                List<SyndicationItem> item = new List<SyndicationItem>();
+                bool isFirst = true;
+                foreach (var val in iter)
+                {
+                    if (isFirst)
+                    {
+                        isFirst = false;
+                        updateTime = val.OutputTime;
+                    }
+                    var destTime = TimeZoneInfo.ConvertTime(val.OutputTime, _timeZone);
+                    SyndicationItem sitem = new SyndicationItem()
+                    {
+                        Title = new TextSyndicationContent(val.Summary),
+                        //Summary = SyndicationContent.CreatePlaintextContent(val.Summary),
+                        Content = SyndicationContent.CreateHtmlContent(val.Content),
+                        PublishDate = destTime,
+                        LastUpdatedTime = destTime,
+                        Links = { new SyndicationLink(new Uri(val.RelatedAddress)) },
+                        Id = GetStringHash(val.Summary)
+                    };
+                    item.Add(sitem);
+                }
+                feed.Items = item;
+                feed.LastUpdatedTime = updateTime;
+                //Console.WriteLine("RssData Updated");
+
             }
-            catch (AggregateException e)
+            catch (Exception e)
             {
-                foreach (var v in e.InnerExceptions)
-                    Console.WriteLine(e.Message + " " + v.Message);
-            }
-            finally
-            {
-                isCancel.Dispose();
+                Console.WriteLine(e);
+                string outputstr = e.ToString() + "\n";
+                string anotherPart = "模块RssTerminal发生了异常!\n"
+                                     + e.StackTrace
+                                     + "\n"
+                                     + e.InnerException;
+                File.AppendAllText("ErrorDump.txt", outputstr + anotherPart);
             }
         }
 
-        public void LoadDefaultSetting()
+        public override void LoadDefaultSetting()
         {
+            base.LoadDefaultSetting();
             int randResult = new Random().Next(1, 1000000);
             FeedId = randResult;
             Alias = "RssTerminal" + randResult;

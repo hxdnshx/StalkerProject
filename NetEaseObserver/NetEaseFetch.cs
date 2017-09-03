@@ -11,61 +11,39 @@ using ThreadState = System.Threading.ThreadState;
 
 namespace StalkerProject.NetEaseObserver
 {
-    class NetEaseFetch : ISTKService
+    public class NetEaseFetch : STKWorker
     {
-        public int Interval { get; set; }
         public string TargetUser { get; set; }
-        private Thread workingThread;
-        private AutoResetEvent isTerminate;
-        public string Alias { get; set; }
 
-        public void Start()
+        protected override void Run()
         {
-            if (workingThread == null)
-            {
-                workingThread = new Thread(Run);
-                isTerminate=new AutoResetEvent(false);
-                workingThread.Start();
-            }
-        }
-
-        private void Run()
-        {
-            ProcessStartInfo psi = new ProcessStartInfo("casperjs", "netease.js \"" + TargetUser + "\" \"" + TargetUser + ".json\"");
+            ProcessStartInfo psi = new ProcessStartInfo("casperjs",
+                "netease.js \"" + TargetUser + "\" \"" + TargetUser + ".json\"") {
+                RedirectStandardOutput = false,
+                UseShellExecute = false
+            };
             //psi.RedirectStandardOutput = true;
-            psi.RedirectStandardOutput = false;
             //psi.Verb = "RunAs";
-            psi.UseShellExecute = false;
-            var randomOffset = new Random().Next(0, 1000 * 600);
-            Thread.Sleep(randomOffset);
-            for (;;)
+            if (IsFirstRun && !IsTest) {
+                var randomOffset = new Random().Next(0, 1000 * 600);
+                Thread.Sleep(randomOffset);
+            }
+            Process fetchProc = Process.Start(psi);
+            fetchProc.WaitForExit();
+            if (fetchProc.ExitCode != 0)
+                Console.WriteLine("Fetch Failed.");
+            else
             {
-                
-                Process fetchProc=Process.Start(psi);
-                fetchProc.WaitForExit();
-                if(fetchProc.ExitCode!=0)
-                    Console.WriteLine("Fetch Failed.");
-                else
-                {
-                    string ret = File.ReadAllText(TargetUser + ".json");
-                    JObject obj=JObject.Parse(ret);
-                    OnDataFetched?.Invoke(obj);
-                    //Console.WriteLine("Message Fetched.");
-                }
-
-                if (isTerminate.WaitOne(Math.Max(Interval, 60000)))
-                    break;
+                string ret = File.ReadAllText(TargetUser + ".json");
+                JObject obj = JObject.Parse(ret);
+                OnDataFetched?.Invoke(obj);
+                //Console.WriteLine("Message Fetched.");
             }
         }
 
-        public void Stop()
+        public override void LoadDefaultSetting()
         {
-            isTerminate.Set();
-            workingThread.Join();
-        }
-
-        public void LoadDefaultSetting()
-        {
+            base.LoadDefaultSetting();
             Interval = 60000;
             TargetUser = "InTheFlickering";
             Alias = "NetEaseFetch" + new Random().Next(1, 10000);

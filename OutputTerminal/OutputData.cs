@@ -21,7 +21,7 @@ namespace StalkerProject.OutputTerminal
     }
 
     [Table("DiffData")]
-    class DiffData
+    public class DiffData
     {
         [PrimaryKey][AutoIncrement]
         public int Id { get; set; }

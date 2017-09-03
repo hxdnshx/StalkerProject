@@ -13,24 +13,31 @@ using Newtonsoft.Json.Linq;
 
 namespace StalkerProject.NianObserver
 {
-    public class NianStalker : ISTKService
+    public class NianStalker : STKWorker
     {
         public int TargetUID { get; set; }
-        public int Interval { get; set; }
         public string UserName { get; set; }
         public string PassWord { get; set; }
-        public string Alias { get; set; }
         public string Session { get; set; }
         private string database => Alias + ".db";
         private NianApi api;
-        private Task updateJob;
-        private CancellationTokenSource isCancel;
         private LiteDatabase db;
         private NianData data;
         private string uName;
         private DateTime currentTime;
+        /// <summary>
+        /// 每天只会获取一次private记本的内容
+        /// </summary>
         private int privatePeroid => (1000 * 60 * 60 * 24) / Math.Max(Interval, 60000);
         private int currentPeroid;
+        /// <summary>
+        /// 延迟登录,获取其他Worker的登录token用
+        /// </summary>
+        private bool _isDeferedLogin = false;
+        /// <summary>
+        /// 是否是第一次运行该模块,用于屏蔽第一次启动的数据获取
+        /// </summary>
+        private bool _isFirstRun = false;
         /// <summary>
         /// 对应数据项的增量抓取函数表
         /// </summary>
@@ -313,24 +320,22 @@ namespace StalkerProject.NianObserver
                 }
         }
 
-        private bool _isDeferedLogin=false;
 
-        private bool _isFirstRun = false;
 
-        public void Start()
-        {
-            db=new LiteDatabase(database);
+        protected override void Prepare() {
+            base.Prepare();
+            db = new LiteDatabase(database);
             var col = db.GetCollection<NianData>();
-            data=col.FindOne(Query.All());
+            data = col.FindOne(Query.All());
             if (data == null)
             {
                 data = new NianData();
-                data.ListItems=new Dictionary<string, string>();
-                data.Dreams=new List<DreamInfo>();
+                data.ListItems = new Dictionary<string, string>();
+                data.Dreams = new List<DreamInfo>();
                 col.Insert(data);
                 _isFirstRun = true;
             }
-            api=new NianApi();
+            api = new NianApi();
             if (string.IsNullOrWhiteSpace(Session))
             {
                 Session = Alias + ".session";
@@ -342,11 +347,6 @@ namespace StalkerProject.NianObserver
                     Session += ".session";
                 _isDeferedLogin = true;
             }
-
-            isCancel=new CancellationTokenSource();
-            updateJob=new Task(()=> {Run(isCancel.Token);},isCancel.Token);
-            currentPeroid = 0;
-            updateJob.Start();
         }
 
         void Login()
@@ -371,83 +371,66 @@ namespace StalkerProject.NianObserver
             }
         }
 
-        private void Run(CancellationToken token)
+        protected override void Run()
         {
-            if(_isDeferedLogin)
+            if (IsFirstRun && !IsTest) {
+                Thread.Sleep(new Random().Next(0,200000));
+            }
+            if(IsFirstRun && _isDeferedLogin)
                 Login();
             var col = db.GetCollection<NianData>();
-            for (;;) {
-                var value = DiffDetected;
-                if (_isFirstRun)
-                    DiffDetected = null;
-                var trans = db.BeginTrans();
-                try
-                {
-                    currentTime = DateTime.Now;
-                    //Status Data Compare
-                    var result = api.GetUserData(TargetUID.ToString())["user"] as JObject;
-                    uName = result["name"].Value<string>();
-                    foreach (var obj in result)
-                    {
-                        var val = obj.Value as JValue;
-                        if (val != null)
-                        {
-                            var targetValue = obj.Value.Value<string>();
-                            var sourceValue = "";
-                            if (data.ListItems.ContainsKey(obj.Key))
-                                sourceValue = data.ListItems[obj.Key];
-                            if (sourceValue != targetValue)
-                            {
-                                data.ListItems[obj.Key] = targetValue;
-                                DiffDetected?.Invoke(
-                                    "http://nian.so/#!/user/" + TargetUID,
-                                    uName + "修改了" + obj.Key,
-                                    uName + "修改了" + obj.Key + ",从" + sourceValue + "变为" + targetValue,
-                                    "Nian." + TargetUID +".UserInfo." + obj.Key);
-                            }
-                        }
-                    }
-                    GetDreamList(TargetUID, data);
-                    col.Update(data);
-                    
-                    currentPeroid++;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    Console.WriteLine("Module" + Alias + " Throw an Exception");
-                }
-                if (_isFirstRun) {
-                    _isFirstRun = false;
-                    DiffDetected = value;
-                }
-                Console.WriteLine(Alias + ":Data Fetched");
-                trans.Commit();
-                token.WaitHandle.WaitOne(Math.Max(60000, Interval));
-                token.ThrowIfCancellationRequested();
-            }
-        }
-
-        public void Stop()
-        {
-            isCancel.Cancel();
+            var value = DiffDetected;
+            if (_isFirstRun)
+                DiffDetected = null;
+            var trans = db.BeginTrans();
             try
             {
-                updateJob.Wait();
+                currentTime = DateTime.Now;
+                //Status Data Compare
+                var result = api.GetUserData(TargetUID.ToString())["user"] as JObject;
+                uName = result["name"].Value<string>();
+                foreach (var obj in result)
+                {
+                    var val = obj.Value as JValue;
+                    if (val != null)
+                    {
+                        var targetValue = obj.Value.Value<string>();
+                        var sourceValue = "";
+                        if (data.ListItems.ContainsKey(obj.Key))
+                            sourceValue = data.ListItems[obj.Key];
+                        if (sourceValue != targetValue)
+                        {
+                            data.ListItems[obj.Key] = targetValue;
+                            DiffDetected?.Invoke(
+                                "http://nian.so/#!/user/" + TargetUID,
+                                uName + "修改了" + obj.Key,
+                                uName + "修改了" + obj.Key + ",从" + sourceValue + "变为" + targetValue,
+                                "Nian." + TargetUID + ".UserInfo." + obj.Key);
+                        }
+                    }
+                }
+                GetDreamList(TargetUID, data);
+                col.Update(data);
+
+                currentPeroid++;
             }
-            catch (AggregateException e)
+            catch (Exception e)
             {
-                foreach (var v in e.InnerExceptions)
-                    Console.WriteLine(e.Message + " " + v.Message);
+                Console.WriteLine(e);
+                Console.WriteLine("Module" + Alias + " Throw an Exception");
             }
-            finally
+            if (_isFirstRun)
             {
-                isCancel.Dispose();
+                _isFirstRun = false;
+                DiffDetected = value;
             }
+            Console.WriteLine(Alias + ":Data Fetched");
+            trans.Commit();
         }
 
-        public void LoadDefaultSetting()
+        public override void LoadDefaultSetting()
         {
+            base.LoadDefaultSetting();
             int randNum=new Random().Next(1,100000);
             Alias = "NianStalker" + randNum;
             Interval = 600000;
