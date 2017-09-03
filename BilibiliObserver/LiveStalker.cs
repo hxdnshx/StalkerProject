@@ -39,7 +39,7 @@ namespace StalkerProject.BilibiliObserver
                 bool status = obj["data"]["_status"].Value<string>() == "on";
                 string title = obj["data"]["ROOMTITLE"].Value<string>();
                 string nickname = obj["data"]["ANCHOR_NICK_NAME"].Value<string>();
-                Console.WriteLine(String.Format("Bilibili LiveRoom{0},Status:{1}", title, status ? "ON" : "OFF"));
+                //Console.WriteLine(String.Format("Bilibili LiveRoom{0},Status:{1}", title, status ? "ON" : "OFF"));
                 if (status != prevStatus)
                 {
                     if (status == true)
