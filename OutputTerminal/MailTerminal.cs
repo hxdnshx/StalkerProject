@@ -9,8 +9,8 @@ using MimeKit;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using LiteDB;
 using MailKit.Security;
+using SQLite.Net;
 
 namespace StalkerProject.OutputTerminal
 {
@@ -18,7 +18,7 @@ namespace StalkerProject.OutputTerminal
     {
         private Task updateJob;
         private CancellationTokenSource isCancel;
-        private LiteDatabase database;
+        private SQLiteConnection database;
         public string Alias { get; set; }
         private DateTime LastCheckTime;
         private string checkFile => Alias + ".shortcut";
@@ -50,10 +50,12 @@ namespace StalkerProject.OutputTerminal
                 Console.WriteLine("No DiffDatabase connected,Service Terminate");
                 return;
             }
-            var col = database.GetCollection<OutputData>();
             for (;;)
             {
-                var list=col.Find(Query.GT("OutputTime", LastCheckTime)).OrderByDescending(x=>x.OutputTime);
+                var list = (from p in database.Table<DiffData>()
+                            where p.OutputTime > LastCheckTime
+                            orderby p.OutputTime descending
+                            select p);
                 string AllOutput = "以下是新更新的内容：";
                 foreach (var outputData in list)
                 {
@@ -127,7 +129,7 @@ namespace StalkerProject.OutputTerminal
             Interval = 3600000;//一天一次
         }
 
-        public void GetDatabase(LiteDatabase db)
+        public void GetDatabase(SQLiteConnection db)
         {
             database = db;
         }

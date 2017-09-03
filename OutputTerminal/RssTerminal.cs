@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Security.Cryptography;
 using System.Text;
-using LiteDB;
+using SQLite.Net;
 
 namespace StalkerProject.OutputTerminal
 {
@@ -20,7 +20,7 @@ namespace StalkerProject.OutputTerminal
         public string FeedName { get; set; }
         public string OutputTimeZone { get; set; }
         private TimeZoneInfo _timeZone;
-        private LiteDatabase database=null;
+        private SQLiteConnection database=null;
         private SyndicationFeed feed;
         private Task updateJob;
         private CancellationTokenSource isCancel;
@@ -42,7 +42,7 @@ namespace StalkerProject.OutputTerminal
             updateJob.Start();
         }
 
-        public void GetDatabase(LiteDatabase db)
+        public void GetDatabase(SQLiteConnection db)
         {
             database = db;
         }
@@ -71,15 +71,15 @@ namespace StalkerProject.OutputTerminal
             {
                 Console.WriteLine("No DiffDatabase connected,Service Terminate");
             }
-            var col = database.GetCollection<OutputData>();
             DateTime updateTime=DateTime.Now;
             for (;;)
             {
                 
                 //Rebuild RssData
-                try
-                {
-                    var iter = col.Find(Query.All(Query.Descending), limit: 60);
+                try {
+                    var iter = (from p in database.Table<DiffData>()
+                        orderby p.OutputTime descending
+                        select p).Take(50);
                     List<SyndicationItem> item = new List<SyndicationItem>();
                     bool isFirst = true;
                     foreach (var val in iter)
@@ -89,7 +89,7 @@ namespace StalkerProject.OutputTerminal
                             isFirst = false;
                             updateTime = val.OutputTime;
                         }
-                        var destTime = TimeZoneInfo.ConvertTime(val.OutputTime, TimeZoneInfo.Local, _timeZone);
+                        var destTime = TimeZoneInfo.ConvertTime(val.OutputTime, _timeZone);
                         SyndicationItem sitem = new SyndicationItem()
                         {
                             Title = new TextSyndicationContent(val.Summary),

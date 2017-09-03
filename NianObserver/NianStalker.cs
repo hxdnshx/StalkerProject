@@ -315,6 +315,8 @@ namespace StalkerProject.NianObserver
 
         private bool _isDeferedLogin=false;
 
+        private bool _isFirstRun = false;
+
         public void Start()
         {
             db=new LiteDatabase(database);
@@ -326,6 +328,7 @@ namespace StalkerProject.NianObserver
                 data.ListItems=new Dictionary<string, string>();
                 data.Dreams=new List<DreamInfo>();
                 col.Insert(data);
+                _isFirstRun = true;
             }
             api=new NianApi();
             if (string.IsNullOrWhiteSpace(Session))
@@ -373,8 +376,10 @@ namespace StalkerProject.NianObserver
             if(_isDeferedLogin)
                 Login();
             var col = db.GetCollection<NianData>();
-            for (;;)
-            {
+            for (;;) {
+                var value = DiffDetected;
+                if (_isFirstRun)
+                    DiffDetected = null;
                 var trans = db.BeginTrans();
                 try
                 {
@@ -411,6 +416,10 @@ namespace StalkerProject.NianObserver
                 {
                     Console.WriteLine(e);
                     Console.WriteLine("Module" + Alias + " Throw an Exception");
+                }
+                if (_isFirstRun) {
+                    _isFirstRun = false;
+                    DiffDetected = value;
                 }
                 Console.WriteLine(Alias + ":Data Fetched");
                 trans.Commit();

@@ -3,21 +3,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LiteDB;
+using SQLite.Net;
+using SQLite.Net.Attributes;
+using SQLite.Net.Interop;
+using SQLite.Net.Platform.Generic;
 
 namespace StalkerProject.OutputTerminal
 {
+
     class DiffDatabase : ISTKService
     {
         public string Alias { get; set; }
         public string DatabasePath { get; set; }
-        private LiteDatabase database;
+        private SQLiteConnection database;
         public void Start()
         {
             if (string.IsNullOrWhiteSpace(DatabasePath))
                 DatabasePath = Alias + ".db";
-            database=new LiteDatabase(DatabasePath);
+            database = CreateDb(DatabasePath);
             DatabaseSource?.Invoke(database);
+        }
+
+        public SQLiteConnection CreateDb(string fileName) {
+            var platform = new SQLitePlatformGeneric();
+            platform.SQLiteApi.Config(ConfigOption.Serialized);
+            /*
+             * 使用Serialize模式串行地进行数据读取写入.
+             * 如果要并行,需要将DatabaseSource的传递变为string
+             * 由各个使用到这个数据库的地方自行建立SQLiteConnection
+             * (*MultiThread模式下不能让同一个SQLiteConnection同时被多个线程使用)
+            */
+            var conn = new SQLiteConnection(
+                platform
+                , fileName);
+            conn.CreateTable<DiffData>();
+            return conn;
         }
 
         public void Stop()
@@ -35,23 +55,21 @@ namespace StalkerProject.OutputTerminal
          * 注意，调用这个的时候不保证Start已经被运行
          */
         [STKDescription("数据源设置")]
-        public Action<LiteDatabase> DatabaseSource { get; set; }
+        public Action<SQLiteConnection> DatabaseSource { get; set; }
 
 
         [STKDescription("录入新的数据")]
         public void InputData(string RelatedAddress, string Summary, string Content, string RelatedVar)
         {
-            var trans = database.BeginTrans();
-            var col = database.GetCollection<OutputData>();
-            col.Insert(new OutputData()
-            {
-                RelatedAddress = RelatedAddress,
-                Summary = Summary,
-                Content = Content,
-                RelatedVar = RelatedVar,
-                OutputTime = DateTime.Now
+            database.RunInTransaction(() => {
+                database.Insert(new DiffData {
+                    RelatedAddress = RelatedAddress,
+                    Summary = Summary,
+                    Content = Content,
+                    RelatedVar = RelatedVar,
+                    OutputTime = DateTime.Now.ToUniversalTime()
+                });
             });
-            trans.Commit();
         }
     }
 }
