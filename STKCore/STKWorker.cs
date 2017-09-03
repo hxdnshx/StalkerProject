@@ -14,6 +14,15 @@ namespace StalkerProject
         private CancellationTokenSource isCancel;
         public int Interval { get; set; }
         public string Alias { get; set; }
+        /// <summary>
+        /// 是否在进行单元测试,单元测试时会去除一些延时要素
+        /// </summary>
+        public bool IsTest { get; set; }
+        protected bool IsFirstRun { get; private set; }
+        public Exception ThrowedException = null;
+
+        public bool ServiceStatus => updateJob?.Status == TaskStatus.Running;
+        public bool IsWaitingForNextRound { get; private set; }
 
         public void Start()
         {
@@ -21,13 +30,25 @@ namespace StalkerProject
             isCancel = new CancellationTokenSource();
             updateJob = new Task(() => { UpdateLoop(isCancel.Token); }, isCancel.Token);
             updateJob.Start();
+            IsFirstRun = true;
         }
 
         private void UpdateLoop(CancellationToken token)
         {
             for (;;)
             {
-                Run();
+                try {
+                    IsWaitingForNextRound = false;
+                    Run();
+                }
+                catch (Exception e) {
+                    ThrowedException = e;
+                    Console.WriteLine($"STKWorker {Alias}: An unhandled exception occured.");
+                    Console.WriteLine(e);
+                    Terminate();
+                }
+                IsWaitingForNextRound = true;
+                IsFirstRun = false;
                 token.WaitHandle.WaitOne(Interval);
                 token.ThrowIfCancellationRequested();
             }
@@ -41,6 +62,10 @@ namespace StalkerProject
         protected virtual void Prepare()
         {
             
+        }
+
+        protected void Terminate() {
+            isCancel.Cancel();
         }
 
         public void Stop()
