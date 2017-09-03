@@ -84,7 +84,16 @@ namespace StalkerProject
                         }
                         break;
                     }
-
+                    if (!isHandled) {
+                        result.Response.StatusCode = 404;
+                        using (StreamWriter writer = new StreamWriter(result.Response.OutputStream))
+                        {
+                            writer.Write("404.");
+                            writer.Close();
+                            result.Response.Close();
+                        }
+                        continue;
+                    }
                 }
                 server.Stop();
                 foreach (var srv in manager.ActiveServices)
