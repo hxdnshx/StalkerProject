@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if  !__MonoCS__
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StalkerProject.BilibiliObserver;
@@ -131,3 +132,4 @@ namespace StalkerProject.UnitTest
         }
     }
 }
+#endif
