@@ -63,8 +63,10 @@ namespace StalkerProject.BilibiliObserver
             }
             catch (Exception e)
             {
+                /*
                 File.AppendAllText("LiveError.log",
                     "\n" + e + "\n" + "收到包内容：\n" + ret);
+                    */
             }
         }
 
