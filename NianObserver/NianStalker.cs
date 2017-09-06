@@ -327,6 +327,7 @@ namespace StalkerProject.NianObserver
             db = new LiteDatabase(database);
             var col = db.GetCollection<NianData>();
             data = col.FindOne(Query.All());
+            currentPeroid = 0;
             if (data == null)
             {
                 data = new NianData();
@@ -406,7 +407,7 @@ namespace StalkerProject.NianObserver
                         }
                     }
                 }
-                Console.WriteLine("UpdateDream");
+                Console.WriteLine($"UpdateDream {TargetUID} {data} {col} {currentPeroid}");
                 GetDreamList(TargetUID, data);
                 col.Update(data);
 
