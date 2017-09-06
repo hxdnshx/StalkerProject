@@ -388,6 +388,7 @@ namespace StalkerProject.NianObserver
                 //Status Data Compare
                 var result = api.GetUserData(TargetUID.ToString())["user"] as JObject;
                 uName = result["name"].Value<string>();
+                Console.WriteLine("GetUserInfo");
                 foreach (var obj in result) {
                     var val = obj.Value as JValue;
                     if (val != null) {
@@ -405,6 +406,7 @@ namespace StalkerProject.NianObserver
                         }
                     }
                 }
+                Console.WriteLine("UpdateDream");
                 GetDreamList(TargetUID, data);
                 col.Update(data);
 
