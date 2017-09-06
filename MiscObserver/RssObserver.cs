@@ -113,7 +113,7 @@ namespace StalkerProject.MiscObserver
         {
             base.Run();
             if (IsFirstRun) {
-                Thread.Sleep(new Random().Next(0,2000000));
+                this.waitToken.WaitHandle.WaitOne(new Random().Next(0,2000000));
             }
             List<string> historyFeeds = new List<string>();
             var result = _conn.Query<FeedGUID>("SELECT GUID FROM FeedData ORDER BY PubTime DESC LIMIT 30");

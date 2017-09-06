@@ -374,11 +374,14 @@ namespace StalkerProject.NianObserver
 
         protected override void Run()
         {
-            if (IsFirstRun && !IsTest) {
-                //Thread.Sleep(new Random().Next(0,200000));
-            }
-            if(IsFirstRun && _isDeferedLogin)
+
+            if (IsFirstRun && _isDeferedLogin) {
+                waitToken.WaitHandle.WaitOne(1000);
                 Login();
+            }
+            if (IsFirstRun && !IsTest) {
+                waitToken.WaitHandle.WaitOne(new Random().Next(0, 1000));
+            }
             var col = db.GetCollection<NianData>();
             var value = DiffDetected;
             if (_isFirstRun)
@@ -389,7 +392,6 @@ namespace StalkerProject.NianObserver
                 //Status Data Compare
                 var result = api.GetUserData(TargetUID.ToString())["user"] as JObject;
                 uName = result["name"].Value<string>();
-                Console.WriteLine("GetUserInfo");
                 foreach (var obj in result) {
                     var val = obj.Value as JValue;
                     if (val != null) {
@@ -407,7 +409,6 @@ namespace StalkerProject.NianObserver
                         }
                     }
                 }
-                Console.WriteLine($"UpdateDream {TargetUID} {data} {col} {currentPeroid}");
                 GetDreamList(TargetUID, data);
                 col.Update(data);
 

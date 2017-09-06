@@ -37,7 +37,7 @@ namespace StalkerProject.OutputTerminal
         protected override void Run() {
             base.Run();
             if (IsFirstRun && database==null) {
-                Thread.Sleep(10000);
+                waitToken.WaitHandle.WaitOne(10000);
                 if (database == null)
                 {
                     Console.WriteLine("No DiffDatabase connected,Service Terminate");

@@ -63,7 +63,7 @@ namespace StalkerProject.OutputTerminal
             if (IsFirstRun)
             {
                 if (database == null)
-                    Thread.Sleep(10000); //WaitFor 10 seconds
+                    waitToken.WaitHandle.WaitOne(10000); //WaitFor 10 seconds
                 if (database == null)
                 {
                     Console.WriteLine("No DiffDatabase connected,Service Terminate");

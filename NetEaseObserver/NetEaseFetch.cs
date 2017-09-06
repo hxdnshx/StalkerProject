@@ -26,7 +26,7 @@ namespace StalkerProject.NetEaseObserver
             //psi.Verb = "RunAs";
             if (IsFirstRun && !IsTest) {
                 var randomOffset = new Random().Next(0, 1000 * 600);
-                Thread.Sleep(randomOffset);
+                waitToken.WaitHandle.WaitOne(randomOffset);
             }
             Process fetchProc = Process.Start(psi);
             fetchProc.WaitForExit();

@@ -56,7 +56,8 @@ namespace StalkerProject.OutputTerminal
             else
             {
                 //列表空，等待
-                _isQueue.WaitOne();
+                //_isQueue.WaitOne();
+                WaitHandle.WaitAny(new WaitHandle[] {_isQueue, this.waitToken.WaitHandle});
             }
         }
 

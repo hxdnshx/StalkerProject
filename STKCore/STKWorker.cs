@@ -12,6 +12,7 @@ namespace StalkerProject
     {
         private Task updateJob;
         private CancellationTokenSource isCancel;
+        protected CancellationToken waitToken => isCancel.Token;
         public int Interval { get; set; }
         public string Alias { get; set; }
         /// <summary>
@@ -32,8 +33,8 @@ namespace StalkerProject
         {
             Prepare();
             isCancel = new CancellationTokenSource();
-            updateJob = new Task(() => { UpdateLoop(isCancel.Token); }, isCancel.Token);
-            updateJob.Start();
+            updateJob = Task.Factory.StartNew(() => { UpdateLoop(isCancel.Token); }, isCancel.Token);
+            //updateJob.Start();
             IsFirstRun = true;
         }
 
@@ -55,7 +56,8 @@ namespace StalkerProject
                 IsWaitingForNextRound = true;
                 IsFirstRun = false;
                 token.WaitHandle.WaitOne(Math.Max(10000,Interval));
-                token.ThrowIfCancellationRequested();
+                if (token.IsCancellationRequested)
+                    break;
             }
         }
 
@@ -83,7 +85,7 @@ namespace StalkerProject
             isCancel.Cancel();
             try
             {
-                updateJob.Wait();
+                    updateJob.Wait();
             }
             catch (AggregateException e)
             {

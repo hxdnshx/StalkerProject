@@ -100,6 +100,7 @@ namespace StalkerProject
                 {
                     srv.Stop();
                 }
+                Console.WriteLine("StalkerProject Terminated.\n\n\n\n\n\n\n");
             }
         }
     }
