@@ -374,7 +374,7 @@ namespace StalkerProject.NianObserver
         protected override void Run()
         {
             if (IsFirstRun && !IsTest) {
-                Thread.Sleep(new Random().Next(0,200000));
+                //Thread.Sleep(new Random().Next(0,200000));
             }
             if(IsFirstRun && _isDeferedLogin)
                 Login();
