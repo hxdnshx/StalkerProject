@@ -383,23 +383,19 @@ namespace StalkerProject.NianObserver
             if (_isFirstRun)
                 DiffDetected = null;
             var trans = db.BeginTrans();
-            try
-            {
+            try {
                 currentTime = DateTime.Now;
                 //Status Data Compare
                 var result = api.GetUserData(TargetUID.ToString())["user"] as JObject;
                 uName = result["name"].Value<string>();
-                foreach (var obj in result)
-                {
+                foreach (var obj in result) {
                     var val = obj.Value as JValue;
-                    if (val != null)
-                    {
+                    if (val != null) {
                         var targetValue = obj.Value.Value<string>();
                         var sourceValue = "";
                         if (data.ListItems.ContainsKey(obj.Key))
                             sourceValue = data.ListItems[obj.Key];
-                        if (sourceValue != targetValue)
-                        {
+                        if (sourceValue != targetValue) {
                             data.ListItems[obj.Key] = targetValue;
                             DiffDetected?.Invoke(
                                 "http://nian.so/#!/user/" + TargetUID,
@@ -414,10 +410,12 @@ namespace StalkerProject.NianObserver
 
                 currentPeroid++;
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Console.WriteLine(e);
                 Console.WriteLine("Module" + Alias + " Throw an Exception");
+            }
+            finally {
+                trans.Commit();
             }
             if (_isFirstRun)
             {
@@ -425,7 +423,7 @@ namespace StalkerProject.NianObserver
                 DiffDetected = value;
             }
             Console.WriteLine(Alias + ":Data Fetched");
-            trans.Commit();
+            
         }
 
         public override void LoadDefaultSetting()
