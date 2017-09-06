@@ -27,8 +27,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeiboObserver", "WeiboObser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiscObserver", "MiscObserver\MiscObserver.csproj", "{1C20AA62-A28C-4851-AF8B-52D619507BB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{3A728885-3153-466C-8268-D72DA241AA9B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,10 +65,6 @@ Global
 		{1C20AA62-A28C-4851-AF8B-52D619507BB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C20AA62-A28C-4851-AF8B-52D619507BB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C20AA62-A28C-4851-AF8B-52D619507BB4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A728885-3153-466C-8268-D72DA241AA9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A728885-3153-466C-8268-D72DA241AA9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A728885-3153-466C-8268-D72DA241AA9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A728885-3153-466C-8268-D72DA241AA9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
