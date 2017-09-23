@@ -64,9 +64,9 @@ namespace StalkerProject
                     //Console.WriteLine(result);
                     foreach (var srv in manager.ActiveServices)
                     {
-                        if (srv is DomainProxy)
+                        if (srv is IDomainProxy)
                         {
-                            var proxy = srv as DomainProxy;
+                            var proxy = srv as IDomainProxy;
                             if (proxy.OnHttpRequest(result))
                             {
                                 isHandled = true;

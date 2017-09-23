@@ -71,6 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileTerminal.cs" />
     <Compile Include="DiffDatabase.cs" />
     <Compile Include="MailTerminal.cs" />
     <Compile Include="OutputData.cs" />

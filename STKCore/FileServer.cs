@@ -11,7 +11,7 @@ namespace StalkerProject
 {
     public class FileServer : DomainProxy
     {
-        public static string WebDir { get; set; }
+        public string WebDir { get; set; }
         public override void LoadDefaultSetting()
         {
             Alias = "FileServer" + new Random().Next(1, 10000);
@@ -39,13 +39,16 @@ namespace StalkerProject
         public override bool OnHttpRequest(HttpListenerContext context)
         {
             if (SubUrl==null) return false;
-            if (context.Request.RawUrl.IndexOf(SubUrl) == 0) //In The Beginning
+            string rawurl = context.Request.RawUrl;
+            if (rawurl.Length > 1 && (rawurl[0] == '/' || rawurl[1] == '\\'))
+                rawurl = rawurl.Substring(1);
+            if (rawurl.IndexOf(SubUrl) == 0) //In The Beginning
             {
                 string reldir;
                 if (SubUrl.Length > 0)
-                    reldir = context.Request.RawUrl.Replace(SubUrl, "");
+                    reldir = rawurl.Replace(SubUrl, "");
                 else
-                    reldir = context.Request.RawUrl;
+                    reldir = rawurl;
                 string dir = CombineDir(WebDir, reldir);
                 if (!File.Exists(dir)) return false;
                 Stopwatch sw = new Stopwatch();

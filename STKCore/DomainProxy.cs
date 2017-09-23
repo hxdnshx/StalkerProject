@@ -7,7 +7,12 @@ using System.Threading.Tasks;
 
 namespace StalkerProject
 {
-    public class DomainProxy : ISTKService
+    public interface IDomainProxy
+    {
+        bool OnHttpRequest(HttpListenerContext request);
+    }
+
+    public class DomainProxy : ISTKService, IDomainProxy
     {
         public string Alias { get; set; }
         public string SubUrl { get; set; }
