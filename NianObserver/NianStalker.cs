@@ -380,7 +380,7 @@ namespace StalkerProject.NianObserver
                 Login();
             }
             if (IsFirstRun && !IsTest) {
-                waitToken.WaitHandle.WaitOne(new Random().Next(0, 1000));
+                waitToken.WaitHandle.WaitOne(new Random().Next(0, 100000));
             }
             var col = db.GetCollection<NianData>();
             var value = DiffDetected;
