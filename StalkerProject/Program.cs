@@ -100,6 +100,8 @@ namespace StalkerProject
                 {
                     srv.Stop();
                 }
+                manager.ActiveServices.Clear();
+                GC.Collect();
                 Console.WriteLine("StalkerProject Terminated.\n\n\n\n\n\n\n");
             }
         }
