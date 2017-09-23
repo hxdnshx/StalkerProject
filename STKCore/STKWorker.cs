@@ -77,7 +77,7 @@ namespace StalkerProject
 
         public void Stop()
         {
-            if (updateJob.IsCompleted)
+            if (updateJob.Status != TaskStatus.Running)
             {
                 isCancel.Dispose();
                 return;
