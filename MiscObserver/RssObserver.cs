@@ -153,6 +153,9 @@ namespace StalkerProject.MiscObserver
                     {
                         Console.WriteLine($"Failed to Insert data:\n{synItem.Id}\n{synItem.Title.Text}\n{synItem.Summary.Text}\n{synItem.PublishDate}");
                         Console.WriteLine("Error info:" + e);
+                        continue;
+                        //此处违反约束的原因是重复的Id，所以不应该更新数据
+                        //因为其实数据约束也就这一个嘛
                     }
                     DiffDetected?.Invoke(synItem.Id, title + " - " + synItem.Title.Text, synItem.Summary.Text, Alias + ".Updated");
                 }
