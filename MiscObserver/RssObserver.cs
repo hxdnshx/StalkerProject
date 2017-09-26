@@ -151,14 +151,8 @@ namespace StalkerProject.MiscObserver
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e.Message);
-                        _conn.Insert(new RSSData
-                        {
-                            Description = synItem.Summary.Text,
-                            GUID = synItem.Id + "111",
-                            Title = title + " - " + synItem.Title.Text,
-                            PubTime = synItem.PublishDate.DateTime.ToUniversalTime()
-                        });
+                        Console.WriteLine($"Failed to Insert data:\n{synItem.Id}\n{synItem.Title.Text}\n{synItem.Summary.Text}\n{synItem.PublishDate}");
+                        Console.WriteLine("Error info:" + e);
                     }
                     DiffDetected?.Invoke(synItem.Id, title + " - " + synItem.Title.Text, synItem.Summary.Text, Alias + ".Updated");
                 }
