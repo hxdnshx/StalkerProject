@@ -116,7 +116,7 @@ namespace StalkerProject.MiscObserver
                 this.waitToken.WaitHandle.WaitOne(new Random().Next(0,2000000));
             }
             List<string> historyFeeds = new List<string>();
-            var result = _conn.Query<FeedGUID>("SELECT GUID FROM FeedData ORDER BY PubTime DESC LIMIT 30");
+            var result = _conn.Query<FeedGUID>("SELECT GUID FROM FeedData ORDER BY PubTime DESC LIMIT 50");
             foreach (var val in result)
             {
                 historyFeeds.Add(val.GUID);
@@ -153,7 +153,8 @@ namespace StalkerProject.MiscObserver
                     {
                         Console.WriteLine($"Failed to Insert data:\n{synItem.Id}\n{synItem.Title.Text}\n{synItem.Summary.Text}\n{synItem.PublishDate}");
                         Console.WriteLine("Error info:" + e);
-                        continue;
+                        //continue;
+                        break;
                         //此处违反约束的原因是重复的Id，所以不应该更新数据
                         //因为其实数据约束也就这一个嘛
                     }
