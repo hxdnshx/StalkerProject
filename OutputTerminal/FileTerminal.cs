@@ -71,8 +71,10 @@ namespace StalkerProject.OutputTerminal
             output.Append("</div></body></html>");
             AllOutput = output.ToString();
             File.WriteAllText(checkFile, DateTime.Now.ToString());
+            string dst = FileServer.CombineDir(Path, DateTime.Now.ToString("yyyyMMddhhmmss") + ".html");
             File.WriteAllText(
-                FileServer.CombineDir(Path, DateTime.Now.ToString("yyyyMMddhhmmss") + ".html"),AllOutput);
+                dst, AllOutput);
+            Console.WriteLine("FileTerminal : write to" + dst);
             StringBuilder index = new StringBuilder();
             index.Append("<html><head><meta content=\"text/html; charset=utf-8\" http-equiv=\"content-type\" /></head><body>");
             foreach (var file in Directory.EnumerateFiles(Path))
