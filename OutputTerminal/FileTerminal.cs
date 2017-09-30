@@ -68,7 +68,7 @@ namespace StalkerProject.OutputTerminal
                     .Replace("\n","<br>"));
                 output.Append("</div>");
             }
-            output.Append("</div></html></body>");
+            output.Append("</div></body></html>");
             AllOutput = output.ToString();
             File.WriteAllText(checkFile, DateTime.Now.ToString());
             File.WriteAllText(
@@ -80,7 +80,7 @@ namespace StalkerProject.OutputTerminal
                 FileInfo fi = new FileInfo(file);
                 index.Append($"<a href=\"{FileServer.CombineDir(Path,fi.Name)}\">{fi.Name}</a><br>");
             }
-            index.Append("</html></body>");
+            index.Append("</body></html>");
             File.WriteAllText(FileServer.CombineDir(Path,"index.html"),index.ToString());
             LastCheckTime = DateTime.Now;
         }
