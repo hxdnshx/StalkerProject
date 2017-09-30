@@ -320,6 +320,7 @@ namespace StalkerProject.NianObserver
                     parameters[additionalParams[i * 2]] = additionalParams[i * 2 + 1];
             }
             uriBuilder.Query = parameters.ToString();
+            Thread.Sleep(500);
             return helper.HttpGet(uriBuilder.ToString());
         }
 
