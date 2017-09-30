@@ -16,12 +16,12 @@ namespace StalkerProject
     {
         public string Alias { get; set; }
         public string SubUrl { get; set; }
-        public void Start()
+        public virtual void Start()
         {
 
         }
 
-        public void Stop()
+        public virtual void Stop()
         {
 
         }

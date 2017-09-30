@@ -42,6 +42,8 @@ namespace StalkerProject
             string rawurl = context.Request.RawUrl;
             if (rawurl.Length > 1 && (rawurl[0] == '/' || rawurl[1] == '\\'))
                 rawurl = rawurl.Substring(1);
+            if (SubUrl.Length > 1 && (SubUrl[0] == '/' || SubUrl[1] == '\\'))
+                SubUrl = SubUrl.Substring(1);
             if (rawurl.IndexOf(SubUrl) == 0) //In The Beginning
             {
                 string reldir;
