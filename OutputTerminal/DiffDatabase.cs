@@ -61,14 +61,13 @@ namespace StalkerProject.OutputTerminal
         [STKDescription("录入新的数据")]
         public void InputData(string RelatedAddress, string Summary, string Content, string RelatedVar)
         {
-            database.RunInTransaction(() => {
-                database.Insert(new DiffData {
-                    RelatedAddress = RelatedAddress,
-                    Summary = Summary,
-                    Content = Content,
-                    RelatedVar = RelatedVar,
-                    OutputTime = DateTime.Now.ToUniversalTime()
-                });
+            database.Insert(new DiffData
+            {
+                RelatedAddress = RelatedAddress,
+                Summary = Summary,
+                Content = Content,
+                RelatedVar = RelatedVar,
+                OutputTime = DateTime.Now.ToUniversalTime()
             });
         }
     }

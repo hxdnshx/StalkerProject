@@ -320,8 +320,15 @@ namespace StalkerProject.NianObserver
                     parameters[additionalParams[i * 2]] = additionalParams[i * 2 + 1];
             }
             uriBuilder.Query = parameters.ToString();
-            Thread.Sleep(500);
-            return helper.HttpGet(uriBuilder.ToString());
+            Thread.Sleep(1000);
+            for (int j = 0; j < 5; j++)
+            {
+                string ret = helper.HttpGet(uriBuilder.ToString());
+                if (!string.IsNullOrWhiteSpace(ret))
+                    return ret;
+                Thread.Sleep(4000);
+            }
+            return "";
         }
 
         public bool RestoreLogin(string userId, string shellToken)
