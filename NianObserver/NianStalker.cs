@@ -146,7 +146,10 @@ namespace StalkerProject.NianObserver
                     {
                         isFoundHead = true;
                         if (refsi.IsRemoved == true)
-                            refsi.IsRemoved = false;//修复之前因为转为private被误标记为已删除的内容
+                        {
+                            refsi.IsRemoved = false; //修复之前因为转为private被误标记为已删除的内容
+                            pos = index;
+                        }
                         if(pos-index <0)
                             throw new Exception("???WTF???");
                         for (int j = index + 1; j <= pos; j++)
