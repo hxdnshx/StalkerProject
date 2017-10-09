@@ -95,13 +95,14 @@ namespace StalkerProject
                         continue;
                     }
                 }
-                server.Stop();
                 foreach (var srv in manager.ActiveServices)
                 {
+                    Console.WriteLine($"Waiting For {srv.Alias}...");
                     srv.Stop();
                 }
                 manager.ActiveServices.Clear();
                 GC.Collect();
+                server.Stop();
                 Console.WriteLine("StalkerProject Terminated.\n\n\n\n\n\n\n");
             }
         }
