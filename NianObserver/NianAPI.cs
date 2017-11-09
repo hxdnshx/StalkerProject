@@ -390,6 +390,7 @@ namespace StalkerProject.NianObserver
             {
                 return jsonDoc["data"] as JObject;
             }
+	    Console.WriteLine("GetUserDataFail" + ret);
             return null;
         }
 

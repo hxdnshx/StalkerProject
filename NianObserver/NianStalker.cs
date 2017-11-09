@@ -415,6 +415,7 @@ namespace StalkerProject.NianObserver
                         }
                     }
                 }
+		Console.WriteLine("wwww" + data);
                 GetDreamList(TargetUID, data);
                 col.Update(data);
 
