@@ -18,19 +18,7 @@ using SQLite.Net.Platform.Win32;
 
 namespace StalkerProject.MiscObserver
 {
-    public static class SQLiteHelper
-    {
-        public static DateTime FromUnixTime(this long unixTime)
-        {
-            return epoch.AddSeconds(unixTime);
-        }
-        private static readonly DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        public static long ToUnixTime(this DateTime date)
-        {
-            return Convert.ToInt64((date.ToUniversalTime() - epoch).TotalSeconds);
-        }
-    }
+    
 
     class MyXmlReader : XmlTextReader
     {

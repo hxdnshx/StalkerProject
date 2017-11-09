@@ -44,6 +44,12 @@ namespace StalkerProject.NianObserver
 
         private void GetDreamExtendInfo(DreamInfo dream, NianData data,bool Incremantal=true)
         {
+            int lastupdated = 0;
+            {
+                string tmp = "0";
+                dream.Status.TryGetValue("lastupdated", out tmp);
+                lastupdated = int.Parse(tmp);
+            }
             int maxPage = 1;
             //Origin Target
             int unresolvedDiff = 0;
@@ -141,6 +147,8 @@ namespace StalkerProject.NianObserver
                                 "Nian." + TargetUID + ".Dream." + id + ".Step." + currentId);
                             unresolvedComment = ((JObject) stepInfo)["comments"].Value<int>();
                             unresolvedDiff--;
+                            si.Status["lastupdated"] = DateTime.Now.ToUnixTime().ToString();
+                            lastupdated = (int)DateTime.Now.ToUnixTime();
                     }
                     else
                     {
@@ -163,6 +171,8 @@ namespace StalkerProject.NianObserver
                                     uName + "删除了一条在" + title + "的足迹",
                                     "足迹内容:" + dream.Steps[j].Status["content"],
                                     "Nian." + TargetUID + ".Dream." + id + ".Step." + dream.Steps[j].Status["sid"]);
+                                dream.Steps[j].Status["lastupdated"] = DateTime.Now.ToUnixTime().ToString();
+                                lastupdated = (int)DateTime.Now.ToUnixTime();
                             }
                         }
                         pos = index - 1;
@@ -177,8 +187,11 @@ namespace StalkerProject.NianObserver
                     if (unresolvedComment != 0)
                     {
                         ResolveComment(si,unresolvedComment);
+                        si.Status["lastupdated"]= DateTime.Now.ToUnixTime().ToString();
+                        lastupdated = (int)DateTime.Now.ToUnixTime();
                     }
                 }
+                dream.Status["lastupdated"] = lastupdated.ToString();
             }
             page -= 1;//for跳出的那一轮需要减去
             if ((page == maxPage || maxPage == 0) && pos >= 0)//最后一页时如果pos不等于0，说明有step被删除了
@@ -584,7 +597,8 @@ namespace StalkerProject.NianObserver
                 {
                     {"id", dreamStep.Status["sid"]},
                     {"content", dreamStep.Status["content"]},
-                    {"isremoved", dreamStep.IsRemoved}
+                    {"isremoved", dreamStep.IsRemoved},
+                    {"lastupdated",dreamStep.Status.ContainsKey("lastupdated") ? dreamStep.Status["lastupdated"] : "0" }
                 };
                 steps.Add(stepContent);
             }
@@ -608,7 +622,8 @@ namespace StalkerProject.NianObserver
                 {
                     {"id", dataDream.Status["id"]},
                     {"title", dataDream.Status["title"]},
-                    {"private", dataDream.Status["private"]}
+                    {"private", dataDream.Status["private"]},
+                    {"lastupdated", dataDream.Status.ContainsKey("lastupdated")? dataDream.Status["lastupdated"] : "0" }
                 };
                 dreams.Add(dreamContent);
             }
