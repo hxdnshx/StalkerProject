@@ -33,7 +33,6 @@ namespace StalkerProject
 
         public FileServer()
         {
-            OnRequest += HandleRequest;
         }
 
         public override bool OnHttpRequest(HttpListenerContext context)
@@ -69,11 +68,6 @@ namespace StalkerProject
                 return true;
             }
             return false;
-        }
-
-        public void HandleRequest(HttpListenerContext context, string subUrl)
-        {
-            
         }
     }
 }
